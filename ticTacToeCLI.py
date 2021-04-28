@@ -1,7 +1,26 @@
+class Matchfield:
+    def __init__(self):
+        self.choices = ["-" for choice in range(0,9)]
+    
+    @property
+    def choices(self):
+        return self.choices
+
+    @choices.setter
+    def choices(self, position, choice):
+        if choice != "X" and choice != "O":
+            raise ValueError
+        if self.choices[position] in "-":
+            self.choices[position] = choice
+        else:
+            print("Not possible")
+
+
 class Player:
     def __init__(self):
-        self.choices = [False for choice in range(0,9)]
+        self.points = 0
 
+    
 
 def print_matchfield(choices_list):
     output_string = ""
@@ -29,21 +48,17 @@ def make_choices_list(player_1_choices, player_2_choices):
 
 def verify_choice(choice, player_1_choices, player_2_choices):
     choice = int(choice)
-    if not 1 <= choice <= len(player_1_choices):
+    if not 0 <= choice <= len(player_1_choices):
         return False
-    elif player_1_choices[choice-1] == True and player_2_choices[choice-1] == True:
+    elif player_1_choices[choice] == True and player_2_choices[choice] == True:
         return False
     else:
         return True
 
 
 def main():
-    player_1_choices = [True] + [True] + [False for choice in range(0, 7)]
-    player_2_choices = [True] + [True] + [False for choice in range(0, 7)]
-
-    player_1_choice = input("Eingabe: ")
-
-    print(verify_choice(player_1_choice, player_1_choices, player_2_choices))
+    print(["-" for choice in range(0,9)])
+    #matchfield = Matchfield()
     
 
 if __name__ == '__main__':
