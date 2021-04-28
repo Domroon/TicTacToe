@@ -1,3 +1,8 @@
+class Player:
+    def __init__(self):
+        self.choices = [False for choice in range(0,9)]
+
+
 def print_matchfield(choices_list):
     output_string = ""
     for choice in range(0, len(choices_list)):
@@ -7,7 +12,7 @@ def print_matchfield(choices_list):
     print(output_string)
 
 
-def get_choices_list(player_1_choices, player_2_choices):
+def make_choices_list(player_1_choices, player_2_choices):
     choices_list = ""
     for choice in range(0, len(player_1_choices)):
         if player_1_choices[choice] == False and player_2_choices[choice] == False:
@@ -23,11 +28,12 @@ def get_choices_list(player_1_choices, player_2_choices):
 
 
 def main():
-    player_1_choices = [True] + [True] + [False for x in range(0, 7)]
-    player_2_choices = [False for x in range(0, 9)]
-    player_2_choices[4] = True
-    player_2_choices[6] = True
-    print_matchfield(get_choices_list(player_1_choices,player_2_choices))
+    player1 = Player()
+    player2 = Player()
+
+    choices_list = make_choices_list(player1.choices, player2.choices)
+
+    print_matchfield(choices_list)
     
 
 if __name__ == '__main__':
