@@ -12,14 +12,11 @@ def get_choices_list(player_1_choices, player_2_choices):
     for choice in range(0, len(player_1_choices)):
         if player_1_choices[choice] == False and player_2_choices[choice] == False:
             choices_list += "-"
-
-        if player_1_choices[choice] == True:
+        elif player_1_choices[choice] == True:
             choices_list += "X"
-
-        if player_2_choices[choice] == True:
+        elif player_2_choices[choice] == True:
             choices_list += "O"
-
-        if player_1_choices[choice] == True and player_2_choices[choice] == True:
+        else:
             raise ValueError
 
     return choices_list
