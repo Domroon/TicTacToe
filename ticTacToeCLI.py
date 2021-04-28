@@ -27,13 +27,23 @@ def make_choices_list(player_1_choices, player_2_choices):
     return choices_list
 
 
+def verify_choice(choice, player_1_choices, player_2_choices):
+    choice = int(choice)
+    if not 1 <= choice <= len(player_1_choices):
+        return False
+    elif player_1_choices[choice-1] == True and player_2_choices[choice-1] == True:
+        return False
+    else:
+        return True
+
+
 def main():
-    player1 = Player()
-    player2 = Player()
+    player_1_choices = [True] + [True] + [False for choice in range(0, 7)]
+    player_2_choices = [True] + [True] + [False for choice in range(0, 7)]
 
-    choices_list = make_choices_list(player1.choices, player2.choices)
+    player_1_choice = input("Eingabe: ")
 
-    print_matchfield(choices_list)
+    print(verify_choice(player_1_choice, player_1_choices, player_2_choices))
     
 
 if __name__ == '__main__':
