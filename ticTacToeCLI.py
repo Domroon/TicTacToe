@@ -91,14 +91,56 @@ class Player:
 
 def main():
     matchfield = Matchfield()
-    player1 = Player("X")
-    player2 = Player("O")
-    player1.add_sign(matchfield.choices, 0)
-    player1.add_sign(matchfield.choices, 1)
-    player1.add_sign(matchfield.choices, 2)
-    player2.add_sign(matchfield.choices, 3)
+    while True:
+        try:
+            player_1 = Player(input("Player 1, please choose a sign (X or O): "))
+            break
+        except ValueError:
+            print("Wrong Input. Please try again.")
+
+    if player_1.sign == "X":
+        player_2 = Player("O")
+    else:
+        player_2 = Player("X")
+
+    print("Player 1 sign: ", player_1.sign)
+    print("Player 2 sign: ", player_2.sign)
+
     matchfield.print()
-    print(matchfield.determine_winner(), "WINS")
+    while True: 
+        while True:
+            try:
+                player_1_pos = int(input("Player 1, please name a number (0-8): "))
+                player_1.add_sign(matchfield.choices, player_1_pos)
+                matchfield.print()
+                break
+            except ValueError:
+                print("Wrong Input. Please try again.")
+
+        if matchfield.determine_winner() == "X":
+            print("Player with sign 'X' win!")
+            break
+
+        if matchfield.determine_winner() == "O":
+            print("Player with sign 'O' win!")
+            break
+
+        while True:
+            try:    
+                player_2_pos = int(input("Player 2, please name a number (0-8): "))
+                player_2.add_sign(matchfield.choices, player_2_pos)
+                matchfield.print()
+                break
+            except ValueError:
+                print("Wrong Input. Please try again.")
+
+        if matchfield.determine_winner() == "X":
+            print("Player with sign 'X' win!")
+            break
+
+        if matchfield.determine_winner() == "O":
+            print("Player with sign 'O' win!")
+            break
 
 
 if __name__ == '__main__':
