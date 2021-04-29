@@ -2,6 +2,15 @@ class Matchfield:
     def __init__(self):
         self.choices = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
 
+    def print(self):
+        output_string = ""
+        for choice in range(0, len(self.choices)):
+            output_string += "|" + self.choices[choice]
+            if (choice + 1) % 3 == 0:
+                output_string += "|\n"
+        print(output_string)
+
+
 class Player:
     def __init__(self, sign):
         self.points = 0
@@ -56,14 +65,12 @@ def verify_choice(choice, player_1_choices, player_2_choices):
 
 
 def main():
-    player1 = Player("X")
     matchfield = Matchfield()
-    print(matchfield.choices)
-    player1.add_sign(matchfield.choices, 7)
-    print(matchfield.choices)
+    player1 = Player("X")
     player2 = Player("O")
-    player2.add_sign(matchfield.choices, 1)
-    print(matchfield.choices)
+    player1.add_sign(matchfield.choices, 1)
+    player2.add_sign(matchfield.choices, 4)
+    matchfield.print()
     
 
 if __name__ == '__main__':
