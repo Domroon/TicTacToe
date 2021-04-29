@@ -36,6 +36,29 @@ class Matchfield:
     def __init__(self):
         self.choices = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
 
+
+    def _convert_pattern(self, sign):
+        num_pattern = []
+        for pos in range(0, len(self.choices)):
+            if self.choices[pos] == sign:
+                num_pattern += [1]
+            elif pos != len(self.choices):
+                num_pattern += [0]
+
+        return num_pattern
+    
+
+    def determine_winner(self):
+        x_pattern = self._convert_pattern("X")
+        o_pattern = self._convert_pattern("O")
+
+        for key, pattern_list in WINNER_PATTERNS.items():
+            if pattern_list == x_pattern:
+                return "X"
+            elif pattern_list == o_pattern:
+                return "O"
+
+
     def print(self):
         output_string = ""
         for choice in range(0, len(self.choices)):
@@ -70,13 +93,13 @@ def main():
     matchfield = Matchfield()
     player1 = Player("X")
     player2 = Player("O")
+    player1.add_sign(matchfield.choices, 0)
     player1.add_sign(matchfield.choices, 1)
     player1.add_sign(matchfield.choices, 2)
+    player2.add_sign(matchfield.choices, 3)
     matchfield.print()
+    print(matchfield.determine_winner(), "WINS")
 
-    for k, pattern_list in WINNER_PATTERNS.items():
-        print(pattern_list)
-    
 
 if __name__ == '__main__':
     main()
