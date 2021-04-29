@@ -23,10 +23,12 @@ class Player:
     @sign.setter
     def sign(self, sign):
         if not sign in ["X", "O"]:
-            raise ValueError
+            raise ValueError("Attribute must be 'X' or 'O'")
         self._sign = sign 
 
     def add_sign(self, choices, position):
+        if choices[position] not in "-":
+            raise ValueError("Position ist not empty")
         choices[position] = self.sign
 
 
@@ -35,7 +37,7 @@ def main():
     player1 = Player("X")
     player2 = Player("O")
     player1.add_sign(matchfield.choices, 1)
-    player2.add_sign(matchfield.choices, 4)
+    player1.add_sign(matchfield.choices, 1)
     matchfield.print()
     
 
