@@ -1,3 +1,37 @@
+WINNER_PATTERNS = {
+    1 : [1, 0, 0,
+         0, 1, 0,
+         0, 0, 1],
+
+    2 : [0, 0, 1,
+         0, 1, 0,
+         1, 0, 0],
+
+    3 : [1, 1, 1,
+         0, 0, 0,
+         0, 0, 0],
+
+    4 : [0, 0, 0,
+         1, 1, 1,
+         0, 0, 0],
+
+    5 : [0, 0, 0,
+         0, 0, 0,
+         1, 1, 1],
+
+    6 : [1, 0, 0,
+         1, 0, 0,
+         1, 0, 0],
+
+    7 : [0, 1, 0,
+         0, 1, 0,
+         0, 1, 0],
+
+    8 : [0, 0, 1,
+         0, 0, 1,
+         0, 0, 1]
+}
+
 class Matchfield:
     def __init__(self):
         self.choices = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
@@ -37,8 +71,11 @@ def main():
     player1 = Player("X")
     player2 = Player("O")
     player1.add_sign(matchfield.choices, 1)
-    player1.add_sign(matchfield.choices, 1)
+    player1.add_sign(matchfield.choices, 2)
     matchfield.print()
+
+    for k, pattern_list in WINNER_PATTERNS.items():
+        print(pattern_list)
     
 
 if __name__ == '__main__':
