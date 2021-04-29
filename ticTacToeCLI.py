@@ -1,19 +1,24 @@
 class Matchfield:
-    def __init__(self, choices):
-        self.choices = choices
-
-    @property
-    def choices(self):
-        return self._choices
-
-    @choices.setter
-    def choices(self, choices):
-        self._choices = choices
-
+    def __init__(self):
+        self.choices = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
 
 class Player:
-    def __init__(self):
+    def __init__(self, sign):
         self.points = 0
+        self.sign = sign
+
+    @property
+    def sign(self):
+        return self._sign
+
+    @sign.setter
+    def sign(self, sign):
+        if not sign in ["X", "O"]:
+            raise ValueError
+        self._sign = sign 
+
+    def add_sign(self, choices, position):
+        choices[position] = self.sign
 
     
 def print_matchfield(choices_list):
@@ -51,12 +56,13 @@ def verify_choice(choice, player_1_choices, player_2_choices):
 
 
 def main():
-    matchfield = Matchfield(["-" for choice in range(0, 9)])
+    player1 = Player("X")
+    matchfield = Matchfield()
     print(matchfield.choices)
-    matchfield.choices = ["X" for choice in range(0, 9)]
+    player1.add_sign(matchfield.choices, 7)
     print(matchfield.choices)
-    matchfield.choices[0] = "O"
-    matchfield.choices[3] = "O"
+    player2 = Player("O")
+    player2.add_sign(matchfield.choices, 1)
     print(matchfield.choices)
     
 
