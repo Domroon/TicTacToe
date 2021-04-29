@@ -70,7 +70,6 @@ class Matchfield:
 
 class Player:
     def __init__(self, sign):
-        self.points = 0
         self.sign = sign
 
     @property
@@ -115,13 +114,14 @@ def main():
                 matchfield.print()
                 break
             except ValueError:
-                print("Wrong Input. Please try again.")
+                print("Please name a number!")
+            except IndexError:
+                print("Please name a number betwenn 0-8")
 
         if matchfield.determine_winner() == "X":
             print("Player with sign 'X' win!")
             break
-
-        if matchfield.determine_winner() == "O":
+        elif matchfield.determine_winner() == "O":
             print("Player with sign 'O' win!")
             break
 
@@ -132,13 +132,14 @@ def main():
                 matchfield.print()
                 break
             except ValueError:
-                print("Wrong Input. Please try again.")
+                print("Please name a number!")
+            except IndexError:
+                print("Please name a number betwenn 0-8")
 
         if matchfield.determine_winner() == "X":
             print("Player with sign 'X' win!")
             break
-
-        if matchfield.determine_winner() == "O":
+        elif matchfield.determine_winner() == "O":
             print("Player with sign 'O' win!")
             break
 
