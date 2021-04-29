@@ -1,19 +1,14 @@
 class Matchfield:
-    def __init__(self):
-        self.choices = ["-" for choice in range(0,9)]
-    
+    def __init__(self, choices):
+        self.choices = choices
+
     @property
     def choices(self):
-        return self.choices
+        return self._choices
 
     @choices.setter
-    def choices(self, position, choice):
-        if choice != "X" and choice != "O":
-            raise ValueError
-        if self.choices[position] in "-":
-            self.choices[position] = choice
-        else:
-            print("Not possible")
+    def choices(self, choices):
+        self._choices = choices
 
 
 class Player:
@@ -21,7 +16,6 @@ class Player:
         self.points = 0
 
     
-
 def print_matchfield(choices_list):
     output_string = ""
     for choice in range(0, len(choices_list)):
@@ -57,8 +51,13 @@ def verify_choice(choice, player_1_choices, player_2_choices):
 
 
 def main():
-    print(["-" for choice in range(0,9)])
-    #matchfield = Matchfield()
+    matchfield = Matchfield(["-" for choice in range(0, 9)])
+    print(matchfield.choices)
+    matchfield.choices = ["X" for choice in range(0, 9)]
+    print(matchfield.choices)
+    matchfield.choices[0] = "O"
+    matchfield.choices[3] = "O"
+    print(matchfield.choices)
     
 
 if __name__ == '__main__':
