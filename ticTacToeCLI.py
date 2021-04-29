@@ -57,6 +57,13 @@ class Matchfield:
                 return "X"
             elif pattern_list == o_pattern:
                 return "O"
+            else:
+                counter = 0
+                for sign in self.choices:
+                    if sign != "-":
+                        counter += 1
+                        if counter == 9:
+                            return "Nobody"
 
 
     def print(self):
@@ -124,6 +131,9 @@ def main():
         elif matchfield.determine_winner() == "O":
             print("Player with sign 'O' win!")
             break
+        elif matchfield.determine_winner() == "Nobody":
+            print("Nobody wins!")
+            break
 
         while True:
             try:    
@@ -141,6 +151,9 @@ def main():
             break
         elif matchfield.determine_winner() == "O":
             print("Player with sign 'O' win!")
+            break
+        elif matchfield.determine_winner() == "Nobody":
+            print("Nobody wins!")
             break
 
 
