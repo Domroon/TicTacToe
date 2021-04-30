@@ -32,6 +32,20 @@ WINNER_PATTERNS = {
          0, 0, 1]
 }
 
+
+class Game:
+    def __init__(self):
+        self.matchfield = Matchfield()
+        self.player_1 = Player(input("Player 1, please choose a sign: "))
+        self.player_2 = Player(self.get_sign())
+
+    def get_sign(self):
+        if self.player_1.sign == "X":
+            return "O"
+        else:
+            return "X"
+
+
 class Matchfield:
     def __init__(self):
         self.choices = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
@@ -96,65 +110,16 @@ class Player:
 
 
 def main():
-    matchfield = Matchfield()
     while True:
         try:
-            player_1 = Player(input("Player 1, please choose a sign (X or O): "))
+            game = Game()
             break
         except ValueError:
             print("Wrong Input. Please try again.")
 
-    if player_1.sign == "X":
-        player_2 = Player("O")
-    else:
-        player_2 = Player("X")
-
-    print("Player 1 sign: ", player_1.sign)
-    print("Player 2 sign: ", player_2.sign)
-
-    matchfield.print()
-    while True: 
-        while True:
-            try:
-                player_1_pos = int(input("Player 1, please name a number (0-8): "))
-                player_1.add_sign(matchfield.choices, player_1_pos)
-                matchfield.print()
-                break
-            except ValueError:
-                print("Please name a number!")
-            except IndexError:
-                print("Please name a number betwenn 0-8")
-
-        if matchfield.determine_winner() == "X":
-            print("Player with sign 'X' win!")
-            break
-        elif matchfield.determine_winner() == "O":
-            print("Player with sign 'O' win!")
-            break
-        elif matchfield.determine_winner() == "Nobody":
-            print("Nobody wins!")
-            break
-
-        while True:
-            try:    
-                player_2_pos = int(input("Player 2, please name a number (0-8): "))
-                player_2.add_sign(matchfield.choices, player_2_pos)
-                matchfield.print()
-                break
-            except ValueError:
-                print("Please name a number!")
-            except IndexError:
-                print("Please name a number betwenn 0-8")
-
-        if matchfield.determine_winner() == "X":
-            print("Player with sign 'X' win!")
-            break
-        elif matchfield.determine_winner() == "O":
-            print("Player with sign 'O' win!")
-            break
-        elif matchfield.determine_winner() == "Nobody":
-            print("Nobody wins!")
-            break
+    print(f'Player 1 sign: {game.player_1.sign}')
+    print(f'Player 2 sign: {game.player_2.sign}\n')
+    game.matchfield.print()
 
 
 if __name__ == '__main__':
