@@ -45,6 +45,31 @@ class Game:
         else:
             return "X"
 
+    def make_move(self, player):
+        while True:
+            try:
+                player_pos = int(input("Player 1, please name a number (0-8): "))
+                player.add_sign(self.matchfield.choices, player_pos)
+                self.matchfield.print()
+                break
+            except ValueError:
+                print("Please name a number!")
+            except IndexError:
+                print("Please name a number betwenn 0-8")
+        
+    def get_winner(self):
+        if self.matchfield.determine_winner() == "X":
+            print("Player with sign 'X' win!")
+            return True
+        elif self.matchfield.determine_winner() == "O":
+            print("Player with sign 'O' win!")
+            return True
+        elif self.matchfield.determine_winner() == "Nobody":
+            print("Nobody wins!")
+            return True
+        else:
+            return False
+
 
 class Matchfield:
     def __init__(self):
@@ -120,6 +145,12 @@ def main():
     print(f'Player 1 sign: {game.player_1.sign}')
     print(f'Player 2 sign: {game.player_2.sign}\n')
     game.matchfield.print()
+
+    while not game.get_winner():
+        game.make_move(game.player_1)
+        if game.get_winner():
+            break
+        game.make_move(game.player_2)
 
 
 if __name__ == '__main__':
