@@ -65,7 +65,6 @@ class Matchfield:
                     if counter == 9:
                         return "Nobody"
 
-
     def print(self):
         output_string = ""
         for choice in range(0, len(self.choices)):
