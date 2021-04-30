@@ -88,21 +88,9 @@ class Matchfield:
     
 
     def determine_winner(self):
-        x_pattern = self._convert_pattern("X")
-        o_pattern = self._convert_pattern("O")
-
-        for key, pattern_list in WINNER_PATTERNS.items():
-            if pattern_list == x_pattern:
-                return "X"
-            elif pattern_list == o_pattern:
-                return "O"
-            else:
-                counter = 0
-                for sign in self.choices:
-                    if sign != "-":
-                        counter += 1
-                        if counter == 9:
-                            return "Nobody"
+        pass
+        #if self.choices[0] == self.choices[1] == self.choices[2]:
+        #    return self.choices[0]
 
 
     def print(self):
