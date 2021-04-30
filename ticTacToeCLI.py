@@ -1,38 +1,3 @@
-WINNER_PATTERNS = {
-    1 : [1, 0, 0,
-         0, 1, 0,
-         0, 0, 1],
-
-    2 : [0, 0, 1,
-         0, 1, 0,
-         1, 0, 0],
-
-    3 : [1, 1, 1,
-         0, 0, 0,
-         0, 0, 0],
-
-    4 : [0, 0, 0,
-         1, 1, 1,
-         0, 0, 0],
-
-    5 : [0, 0, 0,
-         0, 0, 0,
-         1, 1, 1],
-
-    6 : [1, 0, 0,
-         1, 0, 0,
-         1, 0, 0],
-
-    7 : [0, 1, 0,
-         0, 1, 0,
-         0, 1, 0],
-
-    8 : [0, 0, 1,
-         0, 0, 1,
-         0, 0, 1]
-}
-
-
 class Game:
     def __init__(self):
         self.matchfield = Matchfield()
@@ -75,22 +40,30 @@ class Matchfield:
     def __init__(self):
         self.choices = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
 
-
-    def _convert_pattern(self, sign):
-        num_pattern = []
-        for pos in range(0, len(self.choices)):
-            if self.choices[pos] == sign:
-                num_pattern += [1]
-            elif pos != len(self.choices):
-                num_pattern += [0]
-
-        return num_pattern
-    
-
     def determine_winner(self):
-        pass
-        #if self.choices[0] == self.choices[1] == self.choices[2]:
-        #    return self.choices[0]
+        if self.choices[0] == self.choices[1] == self.choices[2]:
+            return self.choices[0]
+        elif self.choices[3] == self.choices[4] == self.choices[5]:
+            return self.choices[3]
+        elif self.choices[6] == self.choices[7] == self.choices[8]:
+            return self.choices[6]
+        elif self.choices[0] == self.choices[3] == self.choices[6]:
+            return self.choices[0]
+        elif self.choices[1] == self.choices[4] == self.choices[7]:
+            return self.choices[1]
+        elif self.choices[2] == self.choices[5] == self.choices[8]:
+            return self.choices[2]
+        elif self.choices[0] == self.choices[4] == self.choices[8]:
+            return self.choices[0]
+        elif self.choices[2] == self.choices[4] == self.choices[6]:
+            return self.choices[2]  
+        else:
+            counter = 0
+            for sign in self.choices:
+                if sign != "-":
+                    counter += 1
+                    if counter == 9:
+                        return "Nobody"
 
 
     def print(self):
@@ -135,11 +108,13 @@ def main():
     print(f'{game.player_2.name} sign: {game.player_2.sign}\n')
     game.matchfield.print()
 
-    while not game.get_winner():
+    while True:
         game.make_move(game.player_1)
         if game.get_winner():
             break
         game.make_move(game.player_2)
+        if game.get_winner():
+            break
 
 
 if __name__ == '__main__':
