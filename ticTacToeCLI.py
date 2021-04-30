@@ -36,8 +36,8 @@ WINNER_PATTERNS = {
 class Game:
     def __init__(self):
         self.matchfield = Matchfield()
-        self.player_1 = Player(input("Player 1, please choose a sign: "))
-        self.player_2 = Player(self.get_sign())
+        self.player_1 = Player(input("Player 1, please choose a sign: "), "Player 1")
+        self.player_2 = Player(self.get_sign(), "Player 2")
 
     def get_sign(self):
         if self.player_1.sign == "X":
@@ -48,12 +48,12 @@ class Game:
     def make_move(self, player):
         while True:
             try:
-                player_pos = int(input("Player 1, please name a number (0-8): "))
+                player_pos = int(input(f'{player.name}, please name a number (0-8): '))
                 player.add_sign(self.matchfield.choices, player_pos)
                 self.matchfield.print()
                 break
             except ValueError:
-                print("Please name a number!")
+                print("Wrong Input. Please try again.")
             except IndexError:
                 print("Please name a number betwenn 0-8")
         
@@ -103,8 +103,9 @@ class Matchfield:
 
 
 class Player:
-    def __init__(self, sign):
+    def __init__(self, sign, name):
         self.sign = sign
+        self.name = name
 
     @property
     def sign(self):
@@ -130,8 +131,8 @@ def main():
         except ValueError:
             print("Wrong Input. Please try again.")
 
-    print(f'Player 1 sign: {game.player_1.sign}')
-    print(f'Player 2 sign: {game.player_2.sign}\n')
+    print(f'{game.player_1.name} sign: {game.player_1.sign}')
+    print(f'{game.player_2.name} sign: {game.player_2.sign}\n')
     game.matchfield.print()
 
     while not game.get_winner():
