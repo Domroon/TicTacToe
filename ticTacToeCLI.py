@@ -13,7 +13,7 @@ class Game:
     def make_move(self, player):
         while True:
             try:
-                player_pos = int(input(f'{player.name}, please name a number (0-8): '))
+                player_pos = int(input(f'{player.name}, please name a number (1-9): ')) - 1
                 player.add_sign(self.matchfield.choices, player_pos)
                 self.matchfield.print()
                 break
