@@ -1,5 +1,4 @@
-
-
+from itertools import cycle
 
 class Player:
     def __init__(self, sign, name):
