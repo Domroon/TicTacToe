@@ -1,46 +1,3 @@
-WIN_INDICES = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], # horizontal
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], # vertical
-    [0, 4, 8], [2, 4, 6]             # diagonal
-]
-
-
-class Game:
-    def __init__(self):
-        self.matchfield = Matchfield()
-        self.player_1 = Player(input("Player 1, please choose a sign: "), "Player 1")
-        self.player_2 = Player(self.get_sign(), "Player 2")
-
-    def get_sign(self):
-        if self.player_1.sign == "X":
-            return "O"
-        else:
-            return "X"
-
-    def make_move(self, player):
-        while True:
-            try:
-                player_pos = int(input(f'{player.name}, please name a number (1-9): ')) - 1
-                player.add_sign(self.matchfield.choices, player_pos)
-                self.matchfield.print()
-                break
-            except ValueError:
-                print("Wrong Input. Please try again.")
-            except IndexError:
-                print("Please name a number betwenn 0-8")
-        
-    def get_winner(self):
-        if self.matchfield.determine_winner() == "X":
-            print("Player with sign 'X' win!")
-            return True
-        elif self.matchfield.determine_winner() == "O":
-            print("Player with sign 'O' win!")
-            return True
-        elif self.matchfield.determine_winner() == "Nobody":
-            print("Nobody wins!")
-            return True
-        else:
-            return False
 
 
 class Matchfield:
@@ -88,6 +45,52 @@ class Player:
 
     def __str__(self):
         return f"{self.name} Sign: {self.sign}"
+
+
+class Game:
+    SIGNS = ["X", "O"]
+    WIN_INDICES = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], # horizontal
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], # vertical
+    [0, 4, 8], [2, 4, 6]             # diagonal
+]
+    def __init__(self):
+        self.field = ['-'] * 9
+        self.players = [
+            Player(sign, f"Player {index}")
+            for index, sign in enumerate(self.SIGNS, 1)
+        ]
+
+    def get_sign(self):
+        if self.player_1.sign == "X":
+            return "O"
+        else:
+            return "X"
+
+    def make_move(self, player):
+        while True:
+            try:
+                player_pos = int(input(f'{player.name}, please name a number (1-9): ')) - 1
+                player.add_sign(self.matchfield.choices, player_pos)
+                self.matchfield.print()
+                break
+            except ValueError:
+                print("Wrong Input. Please try again.")
+            except IndexError:
+                print("Please name a number betwenn 0-8")
+        
+    def get_winner(self):
+        if self.matchfield.determine_winner() == "X":
+            print("Player with sign 'X' win!")
+            return True
+        elif self.matchfield.determine_winner() == "O":
+            print("Player with sign 'O' win!")
+            return True
+        elif self.matchfield.determine_winner() == "Nobody":
+            print("Nobody wins!")
+            return True
+        else:
+            return False
 
 
 def main():
