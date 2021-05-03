@@ -86,41 +86,12 @@ class Player:
         self.sign = sign
         self.name = name
 
-    @property
-    def sign(self):
-        return self._sign
-
-    @sign.setter
-    def sign(self, sign):
-        if not sign in ["X", "O"]:
-            raise ValueError("Attribute must be 'X' or 'O'")
-        self._sign = sign 
-
-    def add_sign(self, choices, position):
-        if choices[position] not in "-":
-            raise ValueError("Position ist not empty")
-        choices[position] = self.sign
+    def __str__(self):
+        return f"{self.name} Sign: {self.sign}"
 
 
 def main():
-    while True:
-        try:
-            game = Game()
-            break
-        except ValueError:
-            print("Wrong Input. Please try again.")
-
-    print(f'{game.player_1.name} sign: {game.player_1.sign}')
-    print(f'{game.player_2.name} sign: {game.player_2.sign}\n')
-    game.matchfield.print()
-
-    while True:
-        game.make_move(game.player_1)
-        if game.get_winner():
-            break
-        game.make_move(game.player_2)
-        if game.get_winner():
-            break
+    pass
 
 
 if __name__ == '__main__':
