@@ -78,8 +78,7 @@ class Game:
         while True:
             try:
                 player_pos = int(input(f'{player.name}, please name a number (1-9): ')) - 1
-                player.add_sign(self.matchfield.choices, player_pos)
-                self.matchfield.print()
+                self.add_sign(player, player_pos)
                 break
             except ValueError:
                 print("Wrong Input. Please try again.")
