@@ -67,7 +67,8 @@ class Game:
 
 
 def main():
-    pass
+    game = Game()
+    game.play()
 
 
 if __name__ == '__main__':
