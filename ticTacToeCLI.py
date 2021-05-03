@@ -1,42 +1,5 @@
 
 
-class Matchfield:
-    def __init__(self):
-        self.choices = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
-
-    def determine_winner(self):
-        if self.choices[0] == self.choices[1] == self.choices[2]:
-            return self.choices[0]
-        elif self.choices[3] == self.choices[4] == self.choices[5]:
-            return self.choices[3]
-        elif self.choices[6] == self.choices[7] == self.choices[8]:
-            return self.choices[6]
-        elif self.choices[0] == self.choices[3] == self.choices[6]:
-            return self.choices[0]
-        elif self.choices[1] == self.choices[4] == self.choices[7]:
-            return self.choices[1]
-        elif self.choices[2] == self.choices[5] == self.choices[8]:
-            return self.choices[2]
-        elif self.choices[0] == self.choices[4] == self.choices[8]:
-            return self.choices[0]
-        elif self.choices[2] == self.choices[4] == self.choices[6]:
-            return self.choices[2]  
-        else:
-            counter = 0
-            for sign in self.choices:
-                if sign != "-":
-                    counter += 1
-                    if counter == 9:
-                        return "Nobody"
-
-    def print(self):
-        output_string = ""
-        for choice in range(0, len(self.choices)):
-            output_string += "|" + self.choices[choice]
-            if (choice + 1) % 3 == 0:
-                output_string += "|\n"
-        print(output_string)
-
 
 class Player:
     def __init__(self, sign, name):
