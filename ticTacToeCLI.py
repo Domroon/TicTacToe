@@ -61,11 +61,18 @@ class Game:
             for index, sign in enumerate(self.SIGNS, 1)
         ]
 
-    def get_sign(self):
-        if self.player_1.sign == "X":
-            return "O"
-        else:
-            return "X"
+    def play(self):
+        for player in self.players:
+            print(player)
+        print()
+        self.print_field()
+        for player in cycle(self.players):
+            self.make_move(player)
+            self.print_field()
+            winner = self.determine_winner()
+            if winner:
+                break
+        print(f"Winner is {winner}")
 
     def make_move(self, player):
         while True:
