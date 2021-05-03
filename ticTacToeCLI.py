@@ -83,8 +83,15 @@ class Game:
             except ValueError:
                 print("Wrong Input. Please try again.")
             except IndexError:
-                print("Please name a number betwenn 0-8")
+                print("Please name a number between 0-8")
 
+    def determine_winner(self):
+        for indices in self.WIN_INDICES:
+            choices = set(self.field[i] for i in indices)
+            if len(choices) == 1 and choices != {'-'}:
+                return choices.pop()
+        if not any(c=='-' for c in self.field):
+            return 'Nobody'
 
 def main():
     pass
