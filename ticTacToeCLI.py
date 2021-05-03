@@ -84,19 +84,6 @@ class Game:
                 print("Wrong Input. Please try again.")
             except IndexError:
                 print("Please name a number betwenn 0-8")
-        
-    def get_winner(self):
-        if self.matchfield.determine_winner() == "X":
-            print("Player with sign 'X' win!")
-            return True
-        elif self.matchfield.determine_winner() == "O":
-            print("Player with sign 'O' win!")
-            return True
-        elif self.matchfield.determine_winner() == "Nobody":
-            print("Nobody wins!")
-            return True
-        else:
-            return False
 
 
 def main():
