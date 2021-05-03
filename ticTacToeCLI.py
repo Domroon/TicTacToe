@@ -93,6 +93,10 @@ class Game:
         if not any(c=='-' for c in self.field):
             return 'Nobody'
 
+    def print_field(self):
+        for i in range (0, len(self.field), 3):
+            print(f"|{'|'.join(self.field[i:i+3])}|")
+
 def main():
     pass
 
