@@ -97,6 +97,12 @@ class Game:
         for i in range (0, len(self.field), 3):
             print(f"|{'|'.join(self.field[i:i+3])}|")
 
+    def add_sign(self, player, position):
+        if self.field[position] != "-":
+            raise ValueError("Position is not empty")
+        self.field[position] = player.sign
+
+
 def main():
     pass
 
