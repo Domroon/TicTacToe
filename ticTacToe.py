@@ -1,5 +1,6 @@
 import pygame
 from pygame import math
+from pygame import mouse
 import pygame.freetype
 
 def draw_matchfield_lines(surface, width):
@@ -66,18 +67,38 @@ class Cross(pygame.sprite.Sprite):
 
         # line 1
         self.line_1 = pygame.Surface((15,180), pygame.SRCALPHA)
-        self.line_1.fill((255, 255, 255))
+        self.line_1.fill((255, 0, 0))
         self.line_1 = pygame.transform.rotozoom(self.line_1, 45, 1)
         self.line_1_rect = self.line_1.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.line_1, (0, 0))
 
         # line 2
         self.line_2 = pygame.Surface((15,180), pygame.SRCALPHA)
-        self.line_2.fill((255, 255, 255))
+        self.line_2.fill((255, 0, 0))
         self.line_2 = pygame.transform.rotozoom(self.line_2, 135, 1)
         self.image.blit(self.line_2, (0, 0))
 
         self.rect = self.image.get_rect(center=pos)
+
+
+class Hitbox(pygame.sprite.Sprite):
+    def __init__(self, width, pos):
+        super().__init__()
+        self.pos = pos
+        self.image = pygame.Surface((width, width))
+        self.image.fill((255, 255, 255))
+        self.rect = self.image.get_rect(center=pos)
+
+
+class Mousebox(pygame.sprite.Sprite):
+    def __init__(self, width):
+        super().__init__()
+        self.image = pygame.Surface((width, width))
+        self.image.fill((0, 255, 0))
+        self.rect = self.image.get_rect(center=pygame.mouse.get_pos())
+
+    def update(self):
+        self.rect = self.image.get_rect(center=pygame.mouse.get_pos())
 
 
 def main():
@@ -104,9 +125,22 @@ def main():
         # Cross Test
         cross_width = 140
         positions = calculate_matchfield_positions(matchtfield_rect, cross_width)
-        cross = Cross(cross_width, positions[8])
+        #cross = Cross(cross_width, positions[8])
         cross_group = pygame.sprite.Group()
-        cross_group.add(cross)
+        #cross_group.add(cross)
+
+        # Mousebox Test
+        mousebox_width = 10
+        mousebox = Mousebox(mousebox_width)
+        mousebox_group = pygame.sprite.Group()
+        mousebox_group.add(mousebox)
+
+        # Hitbox Test
+        hitbox = Hitbox(cross_width, positions[0])
+        hitbox_group = pygame.sprite.Group()
+        hitbox_group.add(hitbox)
+        for position in positions:
+            hitbox_group.add(Hitbox(cross_width, position))
         
         clock = pygame.time.Clock()
         fps = 120
@@ -120,10 +154,22 @@ def main():
             
             player_showfield_group.update(2)
             player_showfield_group.draw(window)
-            
+
+            # Hitbox Test
+            hitbox_group.draw(window)
 
             # Cross Test
             cross_group.draw(window)
+
+            # Mousebox Test
+            mousebox.update()
+            mousebox_group.draw(window)
+
+            left_btn, middle_btn, right_btn = pygame.mouse.get_pressed()
+            hit_list = pygame.sprite.spritecollide(mousebox, hitbox_group, False)
+            if len(hit_list) >= 1 and left_btn:
+                cross_group.add(Cross(cross_width, hit_list[0].pos))
+                hitbox_group.remove(hit_list[0])
 
             pygame.display.update()
             clock.tick(fps)
