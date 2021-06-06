@@ -148,6 +148,10 @@ def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    hit_list = pygame.sprite.spritecollide(mousebox, hitbox_group, True)
+                    if len(cross_group) < 9 and len(hit_list) > 0:
+                        cross_group.add(Cross(cross_width, hit_list[0].pos))
 
             window.blit(background, (0, 0))
             background.blit(matchfield, matchfield.get_rect(center=matchtfield_rect.center))
@@ -164,12 +168,6 @@ def main():
             # Mousebox Test
             mousebox.update()
             mousebox_group.draw(window)
-
-            left_btn, middle_btn, right_btn = pygame.mouse.get_pressed()
-            hit_list = pygame.sprite.spritecollide(mousebox, hitbox_group, False)
-            if len(hit_list) >= 1 and left_btn:
-                cross_group.add(Cross(cross_width, hit_list[0].pos))
-                hitbox_group.remove(hit_list[0])
 
             pygame.display.update()
             clock.tick(fps)
