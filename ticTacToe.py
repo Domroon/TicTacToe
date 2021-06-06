@@ -6,13 +6,13 @@ import pygame.freetype
 def draw_matchfield_lines(surface, width):
     # vertical lines
     for i in range(0, 3):
-        pygame.draw.line(surface, (255, 255, 255), (width/3 * i, 0), (width/3 * i, width))
-    pygame.draw.line(surface, (255, 255, 255), (width/3 * 3 - 1, 0), (width/3 * 3 - 1, width))
+        pygame.draw.line(surface, (255, 255, 255), (width/3 * i, 0), (width/3 * i, width), width=5)
+    pygame.draw.line(surface, (255, 255, 255), (width/3 * 3 - 1, 0), (width/3 * 3 - 1, width), width=5)
 
     # horizontal lines
     for i in range(0, 3):
-        pygame.draw.line(surface, (255, 255, 255), (0, width/3 * i), (width,width/3 *i ))
-    pygame.draw.line(surface, (255, 255, 255), (0, width/3*3-1), (width, width/3*3-1))
+        pygame.draw.line(surface, (255, 255, 255), (0, width/3 * i), (width,width/3 *i ), width=5)
+    pygame.draw.line(surface, (255, 255, 255), (0, width/3*3-1), (width, width/3*3-1), width=5)
 
 
 def calculate_matchfield_positions(rect, sign_width = 140):
@@ -61,20 +61,21 @@ class PlayerShowField(pygame.sprite.Sprite):
 
 
 class Cross(pygame.sprite.Sprite):
-    def __init__(self, width, pos):
+    def __init__(self, width, pos, color=(255, 255, 255)):
         super().__init__()
+        self.color = color
         self.image = pygame.Surface((width, width), pygame.SRCALPHA)
 
         # line 1
         self.line_1 = pygame.Surface((15,180), pygame.SRCALPHA)
-        self.line_1.fill((255, 0, 0))
+        self.line_1.fill(self.color)
         self.line_1 = pygame.transform.rotozoom(self.line_1, 45, 1)
         self.line_1_rect = self.line_1.get_rect(center=self.image.get_rect().center)
         self.image.blit(self.line_1, (0, 0))
 
         # line 2
         self.line_2 = pygame.Surface((15,180), pygame.SRCALPHA)
-        self.line_2.fill((255, 0, 0))
+        self.line_2.fill(self.color)
         self.line_2 = pygame.transform.rotozoom(self.line_2, 135, 1)
         self.image.blit(self.line_2, (0, 0))
 
@@ -82,11 +83,12 @@ class Cross(pygame.sprite.Sprite):
 
 
 class Circle(pygame.sprite.Sprite):
-    def __init__(self, diameter, thickness, pos):
+    def __init__(self, diameter, thickness, pos, color=(255, 255, 255)):
         super().__init__()
+        self.color = color
         self.image = pygame.Surface((diameter, diameter), pygame.SRCALPHA)
         self.rect = self.image.get_rect()
-        pygame.draw.circle(self.image, (255, 0, 0 ), self.rect.center, diameter/2, thickness)
+        pygame.draw.circle(self.image, self.color, self.rect.center, diameter/2, thickness)
         self.rect = self.image.get_rect(center=pos)
 
         
@@ -122,7 +124,6 @@ def main():
         background = pygame.Surface((screen_width, screen_width))
         background_rect = background.get_rect(center=window.get_rect().center)
         matchfield = pygame.Surface((matchfield_width, matchfield_width))
-        matchfield.fill((50, 50, 50))
         matchtfield_rect = matchfield.get_rect(center=background_rect.center)
         draw_matchfield_lines(matchfield, matchfield_width)
 
@@ -131,27 +132,25 @@ def main():
         player_showfield_group = pygame.sprite.Group()
         player_showfield_group.add(player_showfield)
 
-        # Cross Test
         cross_width = 140
         positions = calculate_matchfield_positions(matchtfield_rect, cross_width)
-        #cross = Cross(cross_width, positions[8])
-        cross_group = pygame.sprite.Group()
-        #cross_group.add(cross)
 
-        # Mousebox Test
+        # Crosses
+        cross_group = pygame.sprite.Group()
+
+        # Mousebox
         mousebox_width = 10
         mousebox = Mousebox(mousebox_width)
         mousebox_group = pygame.sprite.Group()
         mousebox_group.add(mousebox)
 
-        # Hitbox Test
+        # Hitboxes
         hitbox = Hitbox(cross_width, positions[0])
         hitbox_group = pygame.sprite.Group()
         hitbox_group.add(hitbox)
         for position in positions:
             hitbox_group.add(Hitbox(cross_width, position))
 
-        # Circle Test
         circle_group = pygame.sprite.Group()
 
         # testing
@@ -179,20 +178,13 @@ def main():
             window.blit(background, (0, 0))
             background.blit(matchfield, matchfield.get_rect(center=matchtfield_rect.center))
             
-            player_showfield_group.update(2)
+            player_showfield_group.update(1)
             player_showfield_group.draw(window)
 
-            # Hitbox Test
-            hitbox_group.draw(window)
-
             cross_group.draw(window)
-
-            # Circle Test
             circle_group.draw(window)
 
-            # Mousebox Test
             mousebox.update()
-            mousebox_group.draw(window)
 
             pygame.display.update()
             clock.tick(fps)
