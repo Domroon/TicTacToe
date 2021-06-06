@@ -81,6 +81,15 @@ class Cross(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
 
+class Circle(pygame.sprite.Sprite):
+    def __init__(self, diameter, thickness, pos):
+        super().__init__()
+        self.image = pygame.Surface((diameter, diameter), pygame.SRCALPHA)
+        self.rect = self.image.get_rect()
+        pygame.draw.circle(self.image, (255, 0, 0 ), self.rect.center, diameter/2, thickness)
+        self.rect = self.image.get_rect(center=pos)
+
+        
 class Hitbox(pygame.sprite.Sprite):
     def __init__(self, width, pos):
         super().__init__()
@@ -141,6 +150,13 @@ def main():
         hitbox_group.add(hitbox)
         for position in positions:
             hitbox_group.add(Hitbox(cross_width, position))
+
+        # Circle Test
+        circle_group = pygame.sprite.Group()
+
+        # testing
+        player_x = True
+        player_o = False
         
         clock = pygame.time.Clock()
         fps = 120
@@ -151,7 +167,14 @@ def main():
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     hit_list = pygame.sprite.spritecollide(mousebox, hitbox_group, True)
                     if len(cross_group) < 9 and len(hit_list) > 0:
-                        cross_group.add(Cross(cross_width, hit_list[0].pos))
+                        if player_x:
+                            cross_group.add(Cross(cross_width, hit_list[0].pos))
+                            player_x = False
+                            player_o = True
+                        elif player_o:
+                            circle_group.add(Circle(140, 15, hit_list[0].pos))
+                            player_x = True
+                            player_o = False
 
             window.blit(background, (0, 0))
             background.blit(matchfield, matchfield.get_rect(center=matchtfield_rect.center))
@@ -162,8 +185,10 @@ def main():
             # Hitbox Test
             hitbox_group.draw(window)
 
-            # Cross Test
             cross_group.draw(window)
+
+            # Circle Test
+            circle_group.draw(window)
 
             # Mousebox Test
             mousebox.update()
