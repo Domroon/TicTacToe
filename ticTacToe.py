@@ -36,6 +36,20 @@ def calculate_matchfield_positions(rect, sign_width = 140):
     return positions
 
 
+def show_game_screen(background, matchfield, matchfield_rect, player_showfield_group, cross_group, circle_group, window, mousebox):
+    background.blit(matchfield, matchfield.get_rect(center=matchfield_rect.center))
+            
+    player_showfield_group.update(1)
+    player_showfield_group.draw(window)
+
+    cross_group.draw(window)
+    circle_group.draw(window)
+
+
+def show_menuscreen():
+    pass
+
+
 class PlayerShowField(pygame.sprite.Sprite):
     def __init__(self, size, color, surface):
         super().__init__()
@@ -112,6 +126,17 @@ class Mousebox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pygame.mouse.get_pos())
 
 
+class Button(pygame.sprite.Sprite):
+    def __init__(self, size, pos, width=5):
+        super().__init__()
+        self.width = width
+        self.image = pygame.Surface(size)
+        # do it with to overlaying images that fill with white
+        pygame.draw.lines(self.image, (255, 255, 255), False, [(0, self.width/2), (pos[0] - self.width/2, self.width/2), (pos[0] - self.width/2, size[1] - self.width/2), (self.width/2, size[1] - self.width/2), (self.width/2, self.width/2)], width=5)
+        self.rect = self.image.get_rect(center=pos)
+        
+
+
 def main():
     pygame.init()
     try:
@@ -124,7 +149,7 @@ def main():
         background = pygame.Surface((screen_width, screen_width))
         background_rect = background.get_rect(center=window.get_rect().center)
         matchfield = pygame.Surface((matchfield_width, matchfield_width))
-        matchtfield_rect = matchfield.get_rect(center=background_rect.center)
+        matchfield_rect = matchfield.get_rect(center=background_rect.center)
         draw_matchfield_lines(matchfield, matchfield_width)
 
         # Player Showfield
@@ -133,7 +158,7 @@ def main():
         player_showfield_group.add(player_showfield)
 
         cross_width = 140
-        positions = calculate_matchfield_positions(matchtfield_rect, cross_width)
+        positions = calculate_matchfield_positions(matchfield_rect, cross_width)
 
         # Crosses
         cross_group = pygame.sprite.Group()
@@ -156,14 +181,20 @@ def main():
         # testing
         player_x = True
         player_o = False
+
+        # testing Button
+        button = Button((200, 60), (200, 200))
+        button_group = pygame.sprite.Group()
+        button_group.add(button)
         
         clock = pygame.time.Clock()
         fps = 120
+        gamescreen = False
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and gamescreen:
                     hit_list = pygame.sprite.spritecollide(mousebox, hitbox_group, True)
                     if len(cross_group) < 9 and len(hit_list) > 0:
                         if player_x:
@@ -174,17 +205,18 @@ def main():
                             circle_group.add(Circle(140, 15, hit_list[0].pos))
                             player_x = True
                             player_o = False
+                if event.type == pygame.KEYDOWN:
+                    gamescreen = True
 
             window.blit(background, (0, 0))
-            background.blit(matchfield, matchfield.get_rect(center=matchtfield_rect.center))
-            
-            player_showfield_group.update(1)
-            player_showfield_group.draw(window)
 
-            cross_group.draw(window)
-            circle_group.draw(window)
+            # show the screen
+            if gamescreen:
+                show_game_screen(background, matchfield, matchfield_rect, player_showfield_group, cross_group, circle_group, window, mousebox)
 
             mousebox.update()
+
+            button_group.draw(window)
 
             pygame.display.update()
             clock.tick(fps)
