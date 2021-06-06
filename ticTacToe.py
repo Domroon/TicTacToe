@@ -46,8 +46,15 @@ def show_game_screen(background, matchfield, matchfield_rect, player_showfield_g
     circle_group.draw(window)
 
 
-def show_menuscreen():
-    pass
+def show_menuscreen(button_group, background, mousebox):
+    background.fill((0, 0, 0))
+    hit_list = pygame.sprite.spritecollide(mousebox, button_group, False)
+    for button in hit_list:
+        button.hover()
+    if hit_list:
+        print("here is something")
+
+    button_group.draw(background)
 
 
 class PlayerShowField(pygame.sprite.Sprite):
@@ -127,14 +134,36 @@ class Mousebox(pygame.sprite.Sprite):
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, size, pos, width=5):
+    def __init__(self, text, size, pos, color=(50, 50, 50), width = 10):
         super().__init__()
-        self.width = width
+        self.text = text
+        self.color = color
         self.image = pygame.Surface(size)
-        # do it with to overlaying images that fill with white
-        pygame.draw.lines(self.image, (255, 255, 255), False, [(0, self.width/2), (pos[0] - self.width/2, self.width/2), (pos[0] - self.width/2, size[1] - self.width/2), (self.width/2, size[1] - self.width/2), (self.width/2, self.width/2)], width=5)
+        self.image.fill((self.color))
+
         self.rect = self.image.get_rect(center=pos)
+
+        self.middle_rectangle = pygame.Surface((size[0] - width, size[1] - width))
         
+        self.font = pygame.freetype.Font(None, 40)
+        self.text_surface, self.text_surface_rect = self.font.render(self.text, fgcolor=(50, 50, 50))
+
+        self.image.blit(self.middle_rectangle, self.middle_rectangle.get_rect(center=self.image.get_rect().center))
+        self.text_surface_rect.center = self.middle_rectangle.get_rect().center
+        self.image.blit(self.text_surface, self.text_surface_rect)
+
+    def hover(self, color=(255, 255, 255)):
+        self.image.fill(color)
+        self.image.blit(self.middle_rectangle, self.middle_rectangle.get_rect(center=self.image.get_rect().center))
+        self.font.render_to(self.image, self.text_surface_rect, self.text, color)
+
+    def dehover(self):
+        self.image.fill(self.color)
+        self.image.blit(self.middle_rectangle, self.middle_rectangle.get_rect(center=self.image.get_rect().center))
+        self.font.render_to(self.image, self.text_surface_rect, self.text, self.color)
+
+    def update(self):
+        self.hover()
 
 
 def main():
@@ -183,18 +212,21 @@ def main():
         player_o = False
 
         # testing Button
-        button = Button((200, 60), (200, 200))
+        button = Button("Start", (200, 60), window.get_rect().center)
+        button.hover((255, 255, 255))
+        button.dehover()
         button_group = pygame.sprite.Group()
         button_group.add(button)
         
         clock = pygame.time.Clock()
         fps = 120
-        gamescreen = False
+        game_screen = False
+        menu_screen = True
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and gamescreen:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and game_screen:
                     hit_list = pygame.sprite.spritecollide(mousebox, hitbox_group, True)
                     if len(cross_group) < 9 and len(hit_list) > 0:
                         if player_x:
@@ -211,12 +243,12 @@ def main():
             window.blit(background, (0, 0))
 
             # show the screen
-            if gamescreen:
+            if game_screen:
                 show_game_screen(background, matchfield, matchfield_rect, player_showfield_group, cross_group, circle_group, window, mousebox)
+            elif menu_screen:
+                show_menuscreen(button_group, background, mousebox)
 
             mousebox.update()
-
-            button_group.draw(window)
 
             pygame.display.update()
             clock.tick(fps)
