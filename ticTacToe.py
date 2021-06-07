@@ -46,9 +46,10 @@ def show_game_screen(background, matchfield, matchfield_rect, player_showfield_g
     circle_group.draw(window)
 
 
-def show_menuscreen(button_group, background, mousebox):
+def show_menuscreen(button_group, surface):
+    surface.fill((0, 0, 0))
     button_group.update()
-    button_group.draw(background)
+    button_group.draw(surface)
 
 
 class PlayerShowField(pygame.sprite.Sprite):
@@ -131,13 +132,16 @@ class Button(pygame.sprite.Sprite):
     def __init__(self, text, size, pos, color=(50, 50, 50), width = 10):
         super().__init__()
         self.text = text
+        self.size = size
+        self.pos = pos
         self.color = color
-        self.image = pygame.Surface(size)
+        self.image = pygame.Surface(self.size)
         self.image.fill((self.color))
+        self.width = width
 
         self.rect = self.image.get_rect(center=pos)
 
-        self.middle_rectangle = pygame.Surface((size[0] - width, size[1] - width))
+        self.middle_rectangle = pygame.Surface((self.size[0] - self.width, self.size[1] - self.width))
         
         self.font = pygame.freetype.Font(None, 40)
         self.text_surface, self.text_surface_rect = self.font.render(self.text, fgcolor=(50, 50, 50))
@@ -150,6 +154,7 @@ class Button(pygame.sprite.Sprite):
         self.image.fill(color)
         self.image.blit(self.middle_rectangle, self.middle_rectangle.get_rect(center=self.image.get_rect().center))
         self.font.render_to(self.image, self.text_surface_rect, self.text, color)
+        self.rect = self.image.get_rect(center=self.pos)
 
     def unhover(self):
         self.image.fill(self.color)
@@ -161,6 +166,18 @@ class Button(pygame.sprite.Sprite):
             self.hover()
         else:
             self.unhover()
+    
+    def click(self, offset):
+        self.image = pygame.transform.scale(self.image, (self.size[0] + offset, self.size[1] + offset))
+        self.middle_rectangle = pygame.transform.scale(self.middle_rectangle, (self.size[0] - self.width + offset, self.size[1] - self.width + offset))
+        self.font = pygame.freetype.Font(None, 40 + offset)
+        self.text_surface_rect.center = (self.middle_rectangle.get_rect().centerx - offset, self.middle_rectangle.get_rect().centery)
+
+    def unclick(self):
+        self.image = pygame.transform.scale(self.image, (self.size[0], self.size[1]))
+        self.middle_rectangle = pygame.transform.scale(self.middle_rectangle, (self.size[0] - self.width, self.size[1] - self.width))
+        self.font = pygame.freetype.Font(None, 40)
+        self.text_surface_rect.center = self.middle_rectangle.get_rect().center
 
 
 def main():
@@ -209,9 +226,19 @@ def main():
         player_o = False
 
         # testing Button
-        button = Button("Start", (200, 60), window.get_rect().center)
+        start_button = Button("Start", (200, 60), window.get_rect().center)
         button_group = pygame.sprite.Group()
-        button_group.add(button)
+        
+        exit_button = Button("Exit", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 80))
+        exit_button.unclick()
+
+        buttons = [start_button, exit_button]
+        
+        button_group.add(buttons)
+
+        buttons = {}
+        for button in button_group.sprites():
+            buttons[button.text] = button
         
         clock = pygame.time.Clock()
         fps = 120
@@ -232,8 +259,17 @@ def main():
                             circle_group.add(Circle(140, 15, hit_list[0].pos))
                             player_x = True
                             player_o = False
-                if event.type == pygame.KEYDOWN:
-                    gamescreen = True
+                if event.type == pygame.MOUSEBUTTONDOWN and buttons["Start"].rect.collidepoint(event.pos):
+                    buttons["Start"].click(10)
+                if event.type == pygame.MOUSEBUTTONUP and buttons["Start"].rect.collidepoint(event.pos):
+                    buttons["Start"].unclick()
+                    game_screen = True
+                    menu_screen = False
+                if event.type == pygame.MOUSEBUTTONDOWN and buttons["Exit"].rect.collidepoint(event.pos):
+                    buttons["Exit"].click(10)
+                if event.type == pygame.MOUSEBUTTONUP and buttons["Exit"].rect.collidepoint(event.pos):
+                    buttons["Exit"].unclick()
+                    return
 
             window.blit(background, (0, 0))
 
@@ -241,7 +277,7 @@ def main():
             if game_screen:
                 show_game_screen(background, matchfield, matchfield_rect, player_showfield_group, cross_group, circle_group, window, mousebox)
             elif menu_screen:
-                show_menuscreen(button_group, background, mousebox)
+                show_menuscreen(button_group, background)
 
             mousebox.update()
 
