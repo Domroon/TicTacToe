@@ -181,22 +181,25 @@ class Button(pygame.sprite.Sprite):
 
 
 class Screen:
-    def __init__(self, sprite_groups, sprite_lists, surfaces):
+    def __init__(self, sprite_groups, sprite_lists, surface):
+        # sprite_lists attribute not necessary?!
+        # save all sprites from the sprite_groups in seperate sprite_lists
+        # to have a save location, so that you can remove all sprites 
+        # from the groups but can them put later back to the sprite groups
         pass
 
     def add(self):
         # add the screen to the main surface
         # -> add all sprites from the sprite_lists to the right sprite_groups
-        # -> draw all sprite_groups
         pass
 
     def show(self):
-        # draw all sprite_groups
+        # draw all sprite_groups to the given surface
         pass
 
     def remove():
         # empty() all sprite groups
-        # draw/blit a black screen over the main surface
+        # draw/blit a black screen over the given surface
         pass
 
 
