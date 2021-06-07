@@ -197,9 +197,12 @@ class Screen:
         # draw all sprite_groups to the given surface
         pass
 
-    def remove():
+    def remove(self):
         # empty() all sprite groups
         # draw/blit a black screen over the given surface
+        pass
+
+    def handle_event(self, event):
         pass
 
 
