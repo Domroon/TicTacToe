@@ -180,6 +180,26 @@ class Button(pygame.sprite.Sprite):
         self.text_surface_rect.center = self.middle_rectangle.get_rect().center
 
 
+class Screen:
+    def __init__(self, sprite_groups, sprite_lists, surfaces):
+        pass
+
+    def add(self):
+        # add the screen to the main surface
+        # -> add all sprites from the sprite_lists to the right sprite_groups
+        # -> draw all sprite_groups
+        pass
+
+    def show(self):
+        # draw all sprite_groups
+        pass
+
+    def remove():
+        # empty() all sprite groups
+        # draw/blit a black screen over the main surface
+        pass
+
+
 def main():
     pygame.init()
     try:
