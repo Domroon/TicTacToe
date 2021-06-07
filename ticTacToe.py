@@ -182,13 +182,22 @@ class Button(pygame.sprite.Sprite):
 
 
 class Screen:
-    def __init__(self, sprite_groups, sprite_lists):
+    def __init__(self, sprite_groups):
         # sprite_lists attribute not necessary?!
         # save all sprites from the sprite_groups in seperate sprite_lists
         # to have a save location, so that you can remove all sprites 
         # from the groups but can them put later back to the sprite groups
+        self.sprite_lists = []
         self.sprite_groups = sprite_groups
-        self.sprite_lists = sprite_lists
+
+        sprite_list = []
+        for sprite_group in self.sprite_groups:
+            for sprite in sprite_group.sprites():
+                sprite_list.append(sprite)
+            self.sprite_lists.append(sprite_list)
+
+        self.remove()
+        #self.sprite_lists = sprite_lists
         self.active = False
         #implement a menu class for that?
         self.buttons = {}
@@ -202,8 +211,8 @@ class Screen:
         self.active = True
 
         # implement a menu class for that?
-        for button in self.sprite_groups[0]:
-            self.buttons[button.text] = button
+        #for button in self.sprite_groups[0]:
+            #self.buttons[button.text] = button
 
     def draw(self, surface):
         # draw all sprite_groups to the given surface
@@ -211,15 +220,15 @@ class Screen:
             sprite_group.update()
             sprite_group.draw(surface)
 
-    def remove(self, surface, background):
+    def remove(self):
         # empty() all sprite groups
         # draw/blit a black screen over the given surface
         for sprite_group in self.sprite_groups:
             sprite_group.empty()
             #sprite_group.clear(surface, background)
-        self.buttons.clear()
         self.active = False
 
+    #implement in a function?
     def handle_event(self, event, surface, background):
         if self.active:
             if event.type == pygame.MOUSEBUTTONDOWN and self.buttons["Start"].rect.collidepoint(event.pos):
@@ -300,7 +309,8 @@ def main():
         menu_screen = False
 
         # Testing Menu Screen
-        menu_screen = Screen([button_group], [menu_buttons])
+        button_group.add(menu_buttons)
+        menu_screen = Screen([button_group])
         menu_screen.add()
 
         while True:
@@ -318,19 +328,14 @@ def main():
                             circle_group.add(Circle(140, 15, hit_list[0].pos))
                             player_x = True
                             player_o = False
-                # TESTING EVENT HANDLING
+                # TESTING MENU ACTIONS
                 menu_screen.handle_event(event, window, background)
 
             window.blit(background, (0, 0))
 
-            # show the screen
-           # if game_screen:
-                #show_game_screen(background, matchfield, matchfield_rect, player_showfield_group, cross_group, circle_group, window, mousebox)
-            #elif menu_screen:
-                #show_menuscreen(button_group, background)
-
-            # TESTING SCREENS
-            menu_screen.draw(window)
+            # TESTING DRAW SCREENS
+            if menu_screen.active:
+                menu_screen.draw(window)
 
             mousebox.update()
 
