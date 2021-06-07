@@ -2,6 +2,7 @@ import pygame
 from pygame import math
 from pygame import mouse
 from pygame import sprite
+from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP
 import pygame.freetype
 
 def draw_matchfield_lines(surface, width):
@@ -51,6 +52,27 @@ def show_menuscreen(button_group, surface):
     surface.fill((0, 0, 0))
     button_group.update()
     button_group.draw(surface)
+
+
+def check_menu_screen_actions(event, menu_screen):
+    if event.type == MOUSEBUTTONDOWN:
+        for sprite_list in menu_screen.sprite_lists:
+            for sprite in sprite_list:
+                if sprite.text == "Start" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                    sprite.click(10)
+                elif sprite.text == "Exit" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                    sprite.click(10)
+
+    if event.type == MOUSEBUTTONUP:
+        for sprite_list in menu_screen.sprite_lists:
+            for sprite in sprite_list:
+                if sprite.text == "Start" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                    print("Start clicked")
+                    sprite.unclick()
+                    #menu_screen.remove()
+                elif sprite.text == "Exit" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                    pygame.quit()
+                    exit()
 
 
 class PlayerShowField(pygame.sprite.Sprite):
@@ -228,23 +250,7 @@ class Screen:
             #sprite_group.clear(surface, background)
         self.active = False
 
-    #implement in a function?
-    def handle_event(self, event, surface, background):
-        if self.active:
-            if event.type == pygame.MOUSEBUTTONDOWN and self.buttons["Start"].rect.collidepoint(event.pos):
-                self.buttons["Start"].click(10)
-                print("Hit start button")
-            elif event.type == pygame.MOUSEBUTTONUP and self.buttons["Start"].rect.collidepoint(event.pos):
-                self.buttons["Start"].unclick()
-                self.remove(surface, background)
-            elif event.type == pygame.MOUSEBUTTONDOWN and self.buttons["Exit"].rect.collidepoint(event.pos):
-                self.buttons["Exit"].click(10)
-            elif event.type == pygame.MOUSEBUTTONUP and self.buttons["Exit"].rect.collidepoint(event.pos):
-                self.buttons["Exit"].unclick()
-                pygame.quit()
-                exit()
-
-
+    
 def main():
     pygame.init()
     try:
@@ -290,7 +296,7 @@ def main():
         player_x = True
         player_o = False
 
-        # testing Button
+        # Init Menu Screen
         start_button = Button("Start", (200, 60), window.get_rect().center)
         button_group = pygame.sprite.Group()
         
@@ -298,21 +304,16 @@ def main():
         exit_button.unclick()
 
         menu_buttons = [start_button, exit_button]
-        
-        #button_group.add(buttons)
-        
-        clock = pygame.time.Clock()
-        fps = 120
 
-        # TESTING
-        game_screen = False
-        menu_screen = False
-
-        # Testing Menu Screen
         button_group.add(menu_buttons)
         menu_screen = Screen([button_group])
         menu_screen.add()
 
+        #Testing
+        game_screen = False
+        
+        clock = pygame.time.Clock()
+        fps = 120
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -329,7 +330,8 @@ def main():
                             player_x = True
                             player_o = False
                 # TESTING MENU ACTIONS
-                menu_screen.handle_event(event, window, background)
+                if menu_screen.active:
+                    check_menu_screen_actions(event, menu_screen)
 
             window.blit(background, (0, 0))
 
