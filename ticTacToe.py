@@ -303,6 +303,14 @@ def main():
         exit_button = Button("Exit", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 80))
         exit_button.unclick()
 
+        #TESTING######
+        cross = Cross(50, (0, 0))
+        print(type(cross).__name__) #check in check_menu_screen_actions
+        test_sprites = [cross]
+        test_sprites_group = pygame.sprite.Group()
+        test_sprites_group.add(test_sprites)
+        ################
+
         menu_buttons = [start_button, exit_button]
 
         button_group.add(menu_buttons)
