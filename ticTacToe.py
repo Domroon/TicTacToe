@@ -47,13 +47,7 @@ def show_game_screen(background, matchfield, matchfield_rect, player_showfield_g
 
 
 def show_menuscreen(button_group, background, mousebox):
-    background.fill((0, 0, 0))
-    hit_list = pygame.sprite.spritecollide(mousebox, button_group, False)
-    for button in hit_list:
-        button.hover()
-    if hit_list:
-        print("here is something")
-
+    button_group.update()
     button_group.draw(background)
 
 
@@ -157,13 +151,16 @@ class Button(pygame.sprite.Sprite):
         self.image.blit(self.middle_rectangle, self.middle_rectangle.get_rect(center=self.image.get_rect().center))
         self.font.render_to(self.image, self.text_surface_rect, self.text, color)
 
-    def dehover(self):
+    def unhover(self):
         self.image.fill(self.color)
         self.image.blit(self.middle_rectangle, self.middle_rectangle.get_rect(center=self.image.get_rect().center))
         self.font.render_to(self.image, self.text_surface_rect, self.text, self.color)
 
     def update(self):
-        self.hover()
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            self.hover()
+        else:
+            self.unhover()
 
 
 def main():
@@ -213,8 +210,6 @@ def main():
 
         # testing Button
         button = Button("Start", (200, 60), window.get_rect().center)
-        button.hover((255, 255, 255))
-        button.dehover()
         button_group = pygame.sprite.Group()
         button_group.add(button)
         
