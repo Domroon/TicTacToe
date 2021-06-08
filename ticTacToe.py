@@ -58,21 +58,23 @@ def check_menu_screen_actions(event, menu_screen):
     if event.type == MOUSEBUTTONDOWN:
         for sprite_list in menu_screen.sprite_lists:
             for sprite in sprite_list:
-                if sprite.text == "Start" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                    sprite.click(10)
-                elif sprite.text == "Exit" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                    sprite.click(10)
+                if type(sprite).__name__ == "Button":
+                    if sprite.text == "Start" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                        sprite.click(10)
+                    elif sprite.text == "Exit" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                        sprite.click(10)
 
     if event.type == MOUSEBUTTONUP:
         for sprite_list in menu_screen.sprite_lists:
             for sprite in sprite_list:
-                if sprite.text == "Start" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                    print("Start clicked")
-                    sprite.unclick()
-                    #menu_screen.remove()
-                elif sprite.text == "Exit" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                    pygame.quit()
-                    exit()
+                if type(sprite).__name__ == "Button":
+                    if sprite.text == "Start" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                        print("Start clicked")
+                        sprite.unclick()
+                        menu_screen.remove()
+                    elif sprite.text == "Exit" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                        pygame.quit()
+                        exit()
 
 
 class PlayerShowField(pygame.sprite.Sprite):
@@ -304,7 +306,7 @@ def main():
         exit_button.unclick()
 
         #TESTING######
-        cross = Cross(50, (0, 0))
+        cross = Cross(140, (200, 200))
         print(type(cross).__name__) #check in check_menu_screen_actions
         test_sprites = [cross]
         test_sprites_group = pygame.sprite.Group()
@@ -314,7 +316,7 @@ def main():
         menu_buttons = [start_button, exit_button]
 
         button_group.add(menu_buttons)
-        menu_screen = Screen([button_group])
+        menu_screen = Screen([button_group, test_sprites_group])
         menu_screen.add()
 
         #Testing
