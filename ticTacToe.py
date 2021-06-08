@@ -71,7 +71,7 @@ def check_menu_screen_actions(event, menu_screen):
                     if sprite.text == "Start" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
                         print("Start clicked")
                         sprite.unclick()
-                        menu_screen.remove()
+                        #menu_screen.remove()
                     elif sprite.text == "Exit" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
                         pygame.quit()
                         exit()
@@ -216,9 +216,10 @@ class Screen:
 
         sprite_list = []
         for sprite_group in self.sprite_groups:
-            for sprite in sprite_group.sprites():
+            for sprite in sprite_group:
                 sprite_list.append(sprite)
             self.sprite_lists.append(sprite_list)
+            sprite_list = []
 
         self.remove()
         #self.sprite_lists = sprite_lists
@@ -307,7 +308,6 @@ def main():
 
         #TESTING######
         cross = Cross(140, (200, 200))
-        print(type(cross).__name__) #check in check_menu_screen_actions
         test_sprites = [cross]
         test_sprites_group = pygame.sprite.Group()
         test_sprites_group.add(test_sprites)
