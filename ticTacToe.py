@@ -54,12 +54,14 @@ def show_menuscreen(button_group, surface):
     button_group.draw(surface)
 
 
-def check_menu_screen_actions(event, menu_screen):
+def check_menu_screen_actions(event, menu_screen, menu_screen_2):
     if event.type == MOUSEBUTTONDOWN:
         for sprite_list in menu_screen.sprite_lists:
             for sprite in sprite_list:
                 if type(sprite).__name__ == "Button":
                     if sprite.text == "Start" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                        sprite.click(10)
+                    elif sprite.text == "Settings" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
                         sprite.click(10)
                     elif sprite.text == "Exit" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
                         sprite.click(10)
@@ -71,10 +73,32 @@ def check_menu_screen_actions(event, menu_screen):
                     if sprite.text == "Start" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
                         print("Start clicked")
                         sprite.unclick()
-                        #menu_screen.remove()
+                    elif sprite.text == "Settings" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                        menu_screen.remove()
+                        menu_screen_2.add()
+                        sprite.unclick()
                     elif sprite.text == "Exit" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
                         pygame.quit()
                         exit()
+
+
+def check_menu_screen_2_actions(event, menu_screen, menu_screen_2):
+    if event.type == MOUSEBUTTONDOWN:
+        for sprite_list in menu_screen_2.sprite_lists:
+            for sprite in sprite_list:
+                if type(sprite).__name__ == "Button":
+                    if sprite.text == "Back" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                        sprite.click(10)
+
+    if event.type == MOUSEBUTTONUP:
+        for sprite_list in menu_screen_2.sprite_lists:
+            for sprite in sprite_list:
+                if type(sprite).__name__ == "Button":
+                    if sprite.text == "Back" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
+                        print("Back clicked")
+                        sprite.unclick()
+                        menu_screen_2.remove()
+                        menu_screen.add()
 
 
 class PlayerShowField(pygame.sprite.Sprite):
@@ -302,22 +326,28 @@ def main():
         # Init Menu Screen
         start_button = Button("Start", (200, 60), window.get_rect().center)
         button_group = pygame.sprite.Group()
-        
-        exit_button = Button("Exit", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 80))
-        exit_button.unclick()
 
-        #TESTING######
-        cross = Cross(140, (200, 200))
+        settings_button = Button("Settings", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 80))
+        
+        exit_button = Button("Exit", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 240))
+
+        menu_buttons = [start_button, exit_button, settings_button]
+
+        button_group.add(menu_buttons)
+
+        cross = Cross(140, (window.get_rect().centerx, window.get_rect().centery - 140))
         test_sprites = [cross]
         test_sprites_group = pygame.sprite.Group()
         test_sprites_group.add(test_sprites)
-        ################
 
-        menu_buttons = [start_button, exit_button]
-
-        button_group.add(menu_buttons)
         menu_screen = Screen([button_group, test_sprites_group])
         menu_screen.add()
+
+        # Init Menu Screen 2
+        back_button = Button("Back", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 160))
+        menu_2_button_group = pygame.sprite.Group()
+        menu_2_button_group.add(back_button)
+        menu_screen_2 = Screen([menu_2_button_group])
 
         #Testing
         game_screen = False
@@ -341,13 +371,17 @@ def main():
                             player_o = False
                 # TESTING MENU ACTIONS
                 if menu_screen.active:
-                    check_menu_screen_actions(event, menu_screen)
+                    check_menu_screen_actions(event, menu_screen, menu_screen_2)
+                elif menu_screen_2.active:
+                    check_menu_screen_2_actions(event, menu_screen, menu_screen_2)
 
             window.blit(background, (0, 0))
 
             # TESTING DRAW SCREENS
             if menu_screen.active:
                 menu_screen.draw(window)
+            elif menu_screen_2.active:
+                menu_screen_2.draw(window)
 
             mousebox.update()
 
