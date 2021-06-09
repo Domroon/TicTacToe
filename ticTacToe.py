@@ -232,21 +232,22 @@ class Button(pygame.sprite.Sprite):
 class Matchfield(pygame.sprite.Sprite):
     def __init__(self, width, surface):
         super().__init__()
+        self.width = width
         self.image = pygame.Surface((width, width))
         self.image.fill((50, 50, 50))
         self.rect = self.image.get_rect(center = surface.get_rect().center)
         self.draw_matchfield_lines(5)
 
-    def draw_matchfield_lines(self, width):
+    def draw_matchfield_lines(self, thickness):
     # vertical lines
         for i in range(0, 3):
-            pygame.draw.line(self.image, (255, 255, 255), (width/3 * i, 0), (width/3 * i, width), width=5)
-        pygame.draw.line(self.image, (255, 255, 255), (width/3 * 3 - 1, 0), (width/3 * 3 - 1, width), width=5)
+            pygame.draw.line(self.image, (255, 255, 255), (self.width/3 * i, 0), (self.width/3 * i, self.width), width=thickness)
+        pygame.draw.line(self.image, (255, 255, 255), (self.width/3 * 3 - 1, 0), (self.width/3 * 3 - 1, self.width), width=thickness)
 
         # horizontal lines
         for i in range(0, 3):
-            pygame.draw.line(self.image, (255, 255, 255), (0, width/3 * i), (width,width/3 *i ), width=5)
-        pygame.draw.line(self.image, (255, 255, 255), (0, width/3*3-1), (width, width/3*3-1), width=5)
+            pygame.draw.line(self.image, (255, 255, 255), (0, self.width/3 * i), (self.width,self.width/3 *i ), width=thickness)
+        pygame.draw.line(self.image, (255, 255, 255), (0, self.width/3*3-1), (self.width, self.width/3*3-1), width=thickness)
 
 class Screen:
     def __init__(self, sprite_groups):
