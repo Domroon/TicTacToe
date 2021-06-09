@@ -5,16 +5,8 @@ from pygame import sprite
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP
 import pygame.freetype
 
-def draw_matchfield_lines(surface, width):
-    # vertical lines
-    for i in range(0, 3):
-        pygame.draw.line(surface, (255, 255, 255), (width/3 * i, 0), (width/3 * i, width), width=5)
-    pygame.draw.line(surface, (255, 255, 255), (width/3 * 3 - 1, 0), (width/3 * 3 - 1, width), width=5)
 
-    # horizontal lines
-    for i in range(0, 3):
-        pygame.draw.line(surface, (255, 255, 255), (0, width/3 * i), (width,width/3 *i ), width=5)
-    pygame.draw.line(surface, (255, 255, 255), (0, width/3*3-1), (width, width/3*3-1), width=5)
+CLICK = pygame.event.custom_type()
 
 
 def calculate_matchfield_positions(rect, sign_width = 140):
@@ -210,11 +202,19 @@ class Button(pygame.sprite.Sprite):
         self.image.blit(self.middle_rectangle, self.middle_rectangle.get_rect(center=self.image.get_rect().center))
         self.font.render_to(self.image, self.text_surface_rect, self.text, self.color)
 
-    def update(self):
+    def update(self, event):
         if self.rect.collidepoint(pygame.mouse.get_pos()):
             self.hover()
         else:
             self.unhover()
+        if event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(pygame.mouse.get_pos()) and event.button == 1:
+            self.click(10)
+            #print(f"{self.text} DOWN")
+            click_event = pygame.event.Event(CLICK, text=self.text)
+            pygame.event.post(click_event)
+        if event.type == MOUSEBUTTONUP:
+            self.unclick()
+            #print(f"{self.text} UP")
     
     def click(self, offset):
         self.image = pygame.transform.scale(self.image, (self.size[0] + offset, self.size[1] + offset))
@@ -228,6 +228,25 @@ class Button(pygame.sprite.Sprite):
         self.font = pygame.freetype.Font(None, 40)
         self.text_surface_rect.center = self.middle_rectangle.get_rect().center
 
+
+class Matchfield(pygame.sprite.Sprite):
+    def __init__(self, width, surface):
+        super().__init__()
+        self.image = pygame.Surface((width, width))
+        self.image.fill((50, 50, 50))
+        self.rect = self.image.get_rect(center = surface.get_rect().center)
+        self.draw_matchfield_lines(5)
+
+    def draw_matchfield_lines(self, width):
+    # vertical lines
+        for i in range(0, 3):
+            pygame.draw.line(self.image, (255, 255, 255), (width/3 * i, 0), (width/3 * i, width), width=5)
+        pygame.draw.line(self.image, (255, 255, 255), (width/3 * 3 - 1, 0), (width/3 * 3 - 1, width), width=5)
+
+        # horizontal lines
+        for i in range(0, 3):
+            pygame.draw.line(self.image, (255, 255, 255), (0, width/3 * i), (width,width/3 *i ), width=5)
+        pygame.draw.line(self.image, (255, 255, 255), (0, width/3*3-1), (width, width/3*3-1), width=5)
 
 class Screen:
     def __init__(self, sprite_groups):
@@ -247,7 +266,7 @@ class Screen:
 
         self.remove()
         #self.sprite_lists = sprite_lists
-        self.active = False
+        #self.active = False
         #implement a menu class for that?
         self.buttons = {}
 
@@ -257,7 +276,7 @@ class Screen:
         for sprite_group in self.sprite_groups:
             sprite_group.add(self.sprite_lists[i])
             i += 1
-        self.active = True
+        #self.active = True
 
         # implement a menu class for that?
         #for button in self.sprite_groups[0]:
@@ -265,9 +284,13 @@ class Screen:
 
     def draw(self, surface):
         # draw all sprite_groups to the given surface
+        # and update all groups
         for sprite_group in self.sprite_groups:
-            sprite_group.update()
             sprite_group.draw(surface)
+
+    def update(self, event):
+        for sprite_group in self.sprite_groups:
+            sprite_group.update(event)
 
     def remove(self):
         # empty() all sprite groups
@@ -275,7 +298,7 @@ class Screen:
         for sprite_group in self.sprite_groups:
             sprite_group.empty()
             #sprite_group.clear(surface, background)
-        self.active = False
+        #self.active = False
 
     
 def main():
@@ -288,29 +311,29 @@ def main():
         pygame.display.set_caption("Clock")
 
         background = pygame.Surface((screen_width, screen_width))
-        background_rect = background.get_rect(center=window.get_rect().center)
-        matchfield = pygame.Surface((matchfield_width, matchfield_width))
-        matchfield_rect = matchfield.get_rect(center=background_rect.center)
-        draw_matchfield_lines(matchfield, matchfield_width)
 
-        # Player Showfield
-        player_showfield = PlayerShowField(50, (255, 255, 255), background)
+        # Init Game Screen
+        matchfield = Matchfield(matchfield_width, background)
+        
+        #background_rect = background.get_rect(center=window.get_rect().center)
+        #matchfield = pygame.Surface((matchfield_width, matchfield_width))
+        #matchfield_rect = matchfield.get_rect(center=background_rect.center)
+        #draw_matchfield_lines(matchfield, matchfield_width)
+
+        player_showfield = PlayerShowField(50, (255, 255, 255), window)
         player_showfield_group = pygame.sprite.Group()
         player_showfield_group.add(player_showfield)
 
         cross_width = 140
-        positions = calculate_matchfield_positions(matchfield_rect, cross_width)
+        positions = calculate_matchfield_positions(matchfield.rect, cross_width)
 
-        # Crosses
         cross_group = pygame.sprite.Group()
 
-        # Mousebox
         mousebox_width = 10
         mousebox = Mousebox(mousebox_width)
         mousebox_group = pygame.sprite.Group()
         mousebox_group.add(mousebox)
 
-        # Hitboxes
         hitbox = Hitbox(cross_width, positions[0])
         hitbox_group = pygame.sprite.Group()
         hitbox_group.add(hitbox)
@@ -319,9 +342,14 @@ def main():
 
         circle_group = pygame.sprite.Group()
 
-        # testing
         player_x = True
         player_o = False
+
+        matchfield_group = pygame.sprite.Group()
+        matchfield_group.add(matchfield)
+
+        game_screen = Screen([matchfield_group])
+        #game_screen.add()
 
         # Init Menu Screen
         start_button = Button("Start", (200, 60), window.get_rect().center)
@@ -343,45 +371,51 @@ def main():
         menu_screen = Screen([button_group, test_sprites_group])
         menu_screen.add()
 
-        # Init Menu Screen 2
+        # Init Settings Screen
         back_button = Button("Back", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 160))
-        menu_2_button_group = pygame.sprite.Group()
-        menu_2_button_group.add(back_button)
-        menu_screen_2 = Screen([menu_2_button_group])
+        settings_button_group = pygame.sprite.Group()
+        settings_button_group.add(back_button)
+        settings_screen = Screen([settings_button_group])
 
-        #Testing
-        game_screen = False
-        
         clock = pygame.time.Clock()
         fps = 120
         while True:
             for event in pygame.event.get():
+                print(event)
                 if event.type == pygame.QUIT:
                     return
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and game_screen:
-                    hit_list = pygame.sprite.spritecollide(mousebox, hitbox_group, True)
-                    if len(cross_group) < 9 and len(hit_list) > 0:
-                        if player_x:
-                            cross_group.add(Cross(cross_width, hit_list[0].pos))
-                            player_x = False
-                            player_o = True
-                        elif player_o:
-                            circle_group.add(Circle(140, 15, hit_list[0].pos))
-                            player_x = True
-                            player_o = False
-                # TESTING MENU ACTIONS
-                if menu_screen.active:
-                    check_menu_screen_actions(event, menu_screen, menu_screen_2)
-                elif menu_screen_2.active:
-                    check_menu_screen_2_actions(event, menu_screen, menu_screen_2)
+                #if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    #hit_list = pygame.sprite.spritecollide(mousebox, hitbox_group, True)
+                    #if len(cross_group) < 9 and len(hit_list) > 0:
+                        #if player_x:
+                            #cross_group.add(Cross(cross_width, hit_list[0].pos))
+                            #player_x = False
+                            #player_o = True
+                        #elif player_o:
+                            #circle_group.add(Circle(140, 15, hit_list[0].pos))
+                            #player_x = True
+                            #player_o = False
+                if event.type == CLICK and event.text == "Settings":
+                    menu_screen.remove()
+                    settings_screen.add()
+                if event.type == CLICK and event.text == "Exit":
+                    return
+                if event.type == CLICK and event.text == "Back":
+                    settings_screen.remove()
+                    menu_screen.add()
+                if event.type == CLICK and event.text == "Start":
+                    menu_screen.remove()
+                    game_screen.add()
 
+                menu_screen.update(event)
+                settings_screen.update(event)
+                game_screen.update(event)
+            
             window.blit(background, (0, 0))
 
-            # TESTING DRAW SCREENS
-            if menu_screen.active:
-                menu_screen.draw(window)
-            elif menu_screen_2.active:
-                menu_screen_2.draw(window)
+            menu_screen.draw(window)
+            settings_screen.draw(window)
+            game_screen.draw(window)
 
             mousebox.update()
 
