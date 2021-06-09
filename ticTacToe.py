@@ -2,7 +2,7 @@ import pygame
 from pygame import math
 from pygame import mouse
 from pygame import sprite
-from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP
+from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION
 import pygame.freetype
 
 
@@ -140,7 +140,7 @@ class Hitbox(pygame.sprite.Sprite):
     def update(self, event):
         if event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(pygame.mouse.get_pos()):
             #print(id(self))
-            matchfield_click_event = pygame.event.Event(MATCHFIELD_CLICK, id=id(self))
+            matchfield_click_event = pygame.event.Event(MATCHFIELD_CLICK, id=id(self), rect=self.rect)
             pygame.event.post(matchfield_click_event)
 
 
@@ -211,15 +211,16 @@ class Button(pygame.sprite.Sprite):
 
 
 class Matchfield(pygame.sprite.Sprite):
-    def __init__(self, width, surface):
+    def __init__(self, width, surface, sign_width=140):
         super().__init__()
         self.width = width
         self.image = pygame.Surface((width, width))
         self.image.fill((50, 50, 50))
         self.rect = self.image.get_rect(center = surface.get_rect().center)
+        self.sign_width = sign_width
         self.postitions = self.calculate_matchfield_positions()
         self.draw_matchfield_lines(5)
-
+        
     def draw_matchfield_lines(self, thickness):
     # vertical lines
         for i in range(0, 3):
@@ -234,25 +235,32 @@ class Matchfield(pygame.sprite.Sprite):
     def add_hitboxes(self):
         pass
 
-    def calculate_matchfield_positions(self, sign_width = 140):
+    def calculate_matchfield_positions(self):
         positions = []
 
         # row 1
         for i in range (1, 6, 2):
-            vector = pygame.math.Vector2(self.rect.topleft) + (sign_width/1.6 * i, sign_width/1.6)
+            vector = pygame.math.Vector2(self.rect.topleft) + (self.sign_width/1.6 * i, self.sign_width/1.6)
             positions.append(vector)
 
         # row 2
         for i in range (1, 6, 2):
-            vector = pygame.math.Vector2(self.rect.topleft) + (sign_width/1.6 * i, sign_width*1.85)
+            vector = pygame.math.Vector2(self.rect.topleft) + (self.sign_width/1.6 * i, self.sign_width*1.85)
             positions.append(vector)
 
         # row 3
         for i in range (1, 6, 2):
-            vector = pygame.math.Vector2(self.rect.topleft) + (sign_width/1.6 * i, sign_width*3.1)
+            vector = pygame.math.Vector2(self.rect.topleft) + (self.sign_width/1.6 * i, self.sign_width*3.1)
             positions.append(vector)
 
         return positions
+
+    def generate_hitboxes(self):
+        hitbox_group = pygame.sprite.Group()
+        for position in self.postitions:
+            hitbox_group.add(Hitbox(self.sign_width, position))
+
+        return hitbox_group
 
 
 class Screen:
@@ -341,12 +349,10 @@ def main():
         mousebox_group = pygame.sprite.Group()
         mousebox_group.add(mousebox)
 
-        hitbox = Hitbox(cross_width, positions[0])
-        hitbox_group = pygame.sprite.Group()
-        for position in positions:
-            hitbox_group.add(Hitbox(cross_width, position))
+        #hitbox_group = pygame.sprite.Group()
+        #for position in positions:
+            #hitbox_group.add(Hitbox(cross_width, position))
 
-        print(hitbox_group)
 
         circle_group = pygame.sprite.Group()
 
@@ -356,7 +362,7 @@ def main():
         matchfield_group = pygame.sprite.Group()
         matchfield_group.add(matchfield)
 
-        game_screen = Screen([matchfield_group, hitbox_group])
+        game_screen = Screen([matchfield_group, matchfield.generate_hitboxes()])
         #game_screen.add()
 
         # Init Menu Screen
@@ -390,6 +396,7 @@ def main():
         while True:
             for event in pygame.event.get():
                 print(event)
+                pygame.event.set_blocked(MOUSEMOTION)
                 if event.type == pygame.QUIT:
                     return
                 #if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
