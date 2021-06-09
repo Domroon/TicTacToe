@@ -220,6 +220,8 @@ class Matchfield(pygame.sprite.Sprite):
         self.sign_width = sign_width
         self.postitions = self.calculate_matchfield_positions()
         self.draw_matchfield_lines(5)
+        self.hitbox_group = self.generate_hitboxes()
+        self.hitbox_ids = self.set_hitbox_ids()
         
     def draw_matchfield_lines(self, thickness):
     # vertical lines
@@ -258,9 +260,17 @@ class Matchfield(pygame.sprite.Sprite):
     def generate_hitboxes(self):
         hitbox_group = pygame.sprite.Group()
         for position in self.postitions:
-            hitbox_group.add(Hitbox(self.sign_width, position))
+            hitbox = Hitbox(self.sign_width, position)
+            hitbox_group.add(hitbox)
 
         return hitbox_group
+
+    def set_hitbox_ids(self):
+        hitbox_ids = []
+        for hitbox in self.hitbox_group:
+            hitbox_ids.append(id(hitbox))
+
+        return hitbox_ids
 
 
 class Screen:
@@ -362,7 +372,7 @@ def main():
         matchfield_group = pygame.sprite.Group()
         matchfield_group.add(matchfield)
 
-        game_screen = Screen([matchfield_group, matchfield.generate_hitboxes()])
+        game_screen = Screen([matchfield_group, matchfield.hitbox_group])
         #game_screen.add()
 
         # Init Menu Screen
@@ -393,23 +403,13 @@ def main():
 
         clock = pygame.time.Clock()
         fps = 120
+
         while True:
             for event in pygame.event.get():
                 print(event)
                 pygame.event.set_blocked(MOUSEMOTION)
                 if event.type == pygame.QUIT:
                     return
-                #if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    #hit_list = pygame.sprite.spritecollide(mousebox, hitbox_group, True)
-                    #if len(cross_group) < 9 and len(hit_list) > 0:
-                        #if player_x:
-                            #cross_group.add(Cross(cross_width, hit_list[0].pos))
-                            #player_x = False
-                            #player_o = True
-                        #elif player_o:
-                            #circle_group.add(Circle(140, 15, hit_list[0].pos))
-                            #player_x = True
-                            #player_o = False
                 if event.type == BUTTON_CLICK and event.text == "Settings":
                     menu_screen.remove()
                     settings_screen.add()
