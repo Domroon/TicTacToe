@@ -213,12 +213,12 @@ class Button(pygame.sprite.Sprite):
     def update(self, event):
         if self.rect.collidepoint(pygame.mouse.get_pos()):
             self.hover()
-            if event.type == MOUSEBUTTONDOWN:
-                self.click(10)
-            if event.type == MOUSEBUTTONUP:
-                self.unclick()
         else:
             self.unhover()
+        if event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(pygame.mouse.get_pos()) and event.button == 1:
+            self.click(10)
+        if event.type == MOUSEBUTTONUP and self.rect.collidepoint(pygame.mouse.get_pos()):
+            self.unclick()
     
     def click(self, offset):
         self.image = pygame.transform.scale(self.image, (self.size[0] + offset, self.size[1] + offset))
