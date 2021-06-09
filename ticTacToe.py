@@ -339,60 +339,36 @@ def main():
 
         # Init Game Screen
         matchfield = Matchfield(matchfield_width, background)
-        
-        #background_rect = background.get_rect(center=window.get_rect().center)
-        #matchfield = pygame.Surface((matchfield_width, matchfield_width))
-        #matchfield_rect = matchfield.get_rect(center=background_rect.center)
-        #draw_matchfield_lines(matchfield, matchfield_width)
 
         player_showfield = PlayerShowField(50, (255, 255, 255), window)
         player_showfield_group = pygame.sprite.Group()
         player_showfield_group.add(player_showfield)
-
-        cross_width = 140
-        positions = matchfield.postitions
-
-        cross_group = pygame.sprite.Group()
 
         mousebox_width = 10
         mousebox = Mousebox(mousebox_width)
         mousebox_group = pygame.sprite.Group()
         mousebox_group.add(mousebox)
 
-        #hitbox_group = pygame.sprite.Group()
-        #for position in positions:
-            #hitbox_group.add(Hitbox(cross_width, position))
-
-
-        circle_group = pygame.sprite.Group()
-
-        player_x = True
-        player_o = False
-
         matchfield_group = pygame.sprite.Group()
         matchfield_group.add(matchfield)
 
         game_screen = Screen([matchfield_group, matchfield.hitbox_group])
-        #game_screen.add()
 
         # Init Menu Screen
         start_button = Button("Start", (200, 60), window.get_rect().center)
-        button_group = pygame.sprite.Group()
-
         settings_button = Button("Settings", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 80))
-        
         exit_button = Button("Exit", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 240))
-
         menu_buttons = [start_button, exit_button, settings_button]
 
+        button_group = pygame.sprite.Group()
         button_group.add(menu_buttons)
 
         cross = Cross(140, (window.get_rect().centerx, window.get_rect().centery - 140))
-        test_sprites = [cross]
-        test_sprites_group = pygame.sprite.Group()
-        test_sprites_group.add(test_sprites)
+        sign_sprites = [cross]
+        sign_sprites_group = pygame.sprite.Group()
+        sign_sprites_group.add(sign_sprites)
 
-        menu_screen = Screen([button_group, test_sprites_group])
+        menu_screen = Screen([button_group, sign_sprites_group])
         menu_screen.add()
 
         # Init Settings Screen
@@ -406,8 +382,6 @@ def main():
 
         while True:
             for event in pygame.event.get():
-                #print(event)
-                pygame.event.set_blocked(MOUSEMOTION)
                 if event.type == pygame.QUIT:
                     return
                 if event.type == BUTTON_CLICK and event.text == "Settings":
