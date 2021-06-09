@@ -210,9 +210,13 @@ class Button(pygame.sprite.Sprite):
         self.image.blit(self.middle_rectangle, self.middle_rectangle.get_rect(center=self.image.get_rect().center))
         self.font.render_to(self.image, self.text_surface_rect, self.text, self.color)
 
-    def update(self):
+    def update(self, event):
         if self.rect.collidepoint(pygame.mouse.get_pos()):
             self.hover()
+            if event.type == MOUSEBUTTONDOWN:
+                self.click(10)
+            if event.type == MOUSEBUTTONUP:
+                self.unclick()
         else:
             self.unhover()
     
@@ -247,7 +251,7 @@ class Screen:
 
         self.remove()
         #self.sprite_lists = sprite_lists
-        self.active = False
+        #self.active = False
         #implement a menu class for that?
         self.buttons = {}
 
@@ -257,7 +261,7 @@ class Screen:
         for sprite_group in self.sprite_groups:
             sprite_group.add(self.sprite_lists[i])
             i += 1
-        self.active = True
+        #self.active = True
 
         # implement a menu class for that?
         #for button in self.sprite_groups[0]:
@@ -265,9 +269,13 @@ class Screen:
 
     def draw(self, surface):
         # draw all sprite_groups to the given surface
+        # and update all groups
         for sprite_group in self.sprite_groups:
-            sprite_group.update()
             sprite_group.draw(surface)
+
+    def update(self, event):
+        for sprite_group in self.sprite_groups:
+            sprite_group.update(event)
 
     def remove(self):
         # empty() all sprite groups
@@ -275,7 +283,7 @@ class Screen:
         for sprite_group in self.sprite_groups:
             sprite_group.empty()
             #sprite_group.clear(surface, background)
-        self.active = False
+        #self.active = False
 
     
 def main():
@@ -369,19 +377,21 @@ def main():
                             circle_group.add(Circle(140, 15, hit_list[0].pos))
                             player_x = True
                             player_o = False
+                menu_screen.update(event)
+                
+            
+                #menu_screen_2.show(event, window)
                 # TESTING MENU ACTIONS
-                if menu_screen.active:
-                    check_menu_screen_actions(event, menu_screen, menu_screen_2)
-                elif menu_screen_2.active:
-                    check_menu_screen_2_actions(event, menu_screen, menu_screen_2)
+                #if menu_screen.active:
+                    #check_menu_screen_actions(event, menu_screen, menu_screen_2)
+                #elif menu_screen_2.active:
+                    #check_menu_screen_2_actions(event, menu_screen, menu_screen_2)
 
             window.blit(background, (0, 0))
+            menu_screen.draw(window)
 
-            # TESTING DRAW SCREENS
-            if menu_screen.active:
-                menu_screen.draw(window)
-            elif menu_screen_2.active:
-                menu_screen_2.draw(window)
+            # TESTING SHOW SCREENS
+            
 
             mousebox.update()
 
