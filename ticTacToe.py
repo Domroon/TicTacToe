@@ -4,6 +4,7 @@ from pygame import mouse
 from pygame import sprite
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION
 import pygame.freetype
+from itertools import cycle
 
 
 BUTTON_CLICK = pygame.event.custom_type()
@@ -120,7 +121,7 @@ class Cross(pygame.sprite.Sprite):
 
 
 class Circle(pygame.sprite.Sprite):
-    def __init__(self, diameter, thickness, pos, color=(255, 255, 255)):
+    def __init__(self, diameter, pos, color=(255, 255, 255), thickness=5):
         super().__init__()
         self.color = color
         self.image = pygame.Surface((diameter, diameter), pygame.SRCALPHA)
@@ -337,6 +338,10 @@ def main():
 
         background = pygame.Surface((screen_width, screen_width))
 
+        # Init cross and circle group
+        cross_group = pygame.sprite.Group()
+        circle_group = pygame.sprite.Group()
+
         # Init Game Screen
         matchfield = Matchfield(matchfield_width, background)
 
@@ -352,7 +357,7 @@ def main():
         matchfield_group = pygame.sprite.Group()
         matchfield_group.add(matchfield)
 
-        game_screen = Screen([matchfield_group, matchfield.hitbox_group])
+        game_screen = Screen([matchfield_group, matchfield.hitbox_group, cross_group, circle_group])
 
         # Init Menu Screen
         start_button = Button("Start", (200, 60), window.get_rect().center)
@@ -380,6 +385,17 @@ def main():
         clock = pygame.time.Clock()
         fps = 120
 
+        # make a sign_list
+        sign_list = []
+        i = 0
+        for sign in cycle(["Cross", "Circle"]):
+            if i == 9:
+               break
+            sign_list.append(sign) 
+            i += 1
+
+        i = 0
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -397,22 +413,60 @@ def main():
                     game_screen.add()
                 if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[0]:
                     print("Field 1 clicked")
+                    if sign_list[i] == "Cross":
+                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
+                    elif sign_list[i] == "Circle":
+                        circle_group.add(Circle())
                 if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[1]:
                     print("Field 2 clicked")
+                    if sign_list[i] == "Cross":
+                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
+                    elif sign_list[i] == "Circle":
+                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
                 if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[2]:
                     print("Field 3 clicked")
+                    if sign_list[i] == "Cross":
+                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
+                    elif sign_list[i] == "Circle":
+                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
                 if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[3]:
                     print("Field 4 clicked")
+                    if sign_list[i] == "Cross":
+                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
+                    elif sign_list[i] == "Circle":
+                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
                 if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[4]:
                     print("Field 5 clicked")
+                    if sign_list[i] == "Cross":
+                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
+                    elif sign_list[i] == "Circle":
+                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
                 if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[5]:
                     print("Field 6 clicked")
+                    if sign_list[i] == "Cross":
+                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
+                    elif sign_list[i] == "Circle":
+                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
                 if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[6]:
                     print("Field 7 clicked")
+                    if sign_list[i] == "Cross":
+                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
+                    elif sign_list[i] == "Circle":
+                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
                 if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[7]:
                     print("Field 8 clicked")
+                    if sign_list[i] == "Cross":
+                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
+                    elif sign_list[i] == "Circle":
+                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
                 if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[8]:
                     print("Field 9 clicked")
+                    if sign_list[i] == "Cross":
+                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
+                    elif sign_list[i] == "Circle":
+                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
+                if event.type == MATCHFIELD_CLICK:
+                    i += 1
 
                 menu_screen.update(event)
                 settings_screen.update(event)
