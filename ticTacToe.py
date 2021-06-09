@@ -194,25 +194,20 @@ class Button(pygame.sprite.Sprite):
         else:
             self.unhover()
         if event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(pygame.mouse.get_pos()) and event.button == 1:
-            self.click(10)
-            #print(f"{self.text} DOWN")
+            self.click()
         if event.type == MOUSEBUTTONUP and self.rect.collidepoint(pygame.mouse.get_pos()) and event.button == 1:
             self.unclick()
             button_click_event = pygame.event.Event(BUTTON_CLICK, text=self.text)
             pygame.event.post(button_click_event)
-            #print(f"{self.text} UP")
     
-    def click(self, offset):
-        self.image = pygame.transform.scale(self.image, (self.size[0] + offset, self.size[1] + offset))
-        self.middle_rectangle = pygame.transform.scale(self.middle_rectangle, (self.size[0] - self.width + offset, self.size[1] - self.width + offset))
-        self.font = pygame.freetype.Font(None, 40 + offset)
-        self.text_surface_rect.center = (self.middle_rectangle.get_rect().centerx - offset, self.middle_rectangle.get_rect().centery)
+    def click(self):
+        self.image.fill((255, 0, 0))
+        self.image.blit(self.middle_rectangle, self.middle_rectangle.get_rect(center=self.image.get_rect().center))
+        self.font.render_to(self.image, self.text_surface_rect, self.text, (255, 0, 0))
+        self.rect = self.image.get_rect(center=self.pos)
 
     def unclick(self):
-        self.image = pygame.transform.scale(self.image, (self.size[0], self.size[1]))
-        self.middle_rectangle = pygame.transform.scale(self.middle_rectangle, (self.size[0] - self.width, self.size[1] - self.width))
-        self.font = pygame.freetype.Font(None, 40)
-        self.text_surface_rect.center = self.middle_rectangle.get_rect().center
+        pass
 
 
 class Matchfield(pygame.sprite.Sprite):
