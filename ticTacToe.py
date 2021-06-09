@@ -5,6 +5,10 @@ from pygame import sprite
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP
 import pygame.freetype
 
+
+CLICK = pygame.event.custom_type()
+
+
 def draw_matchfield_lines(surface, width):
     # vertical lines
     for i in range(0, 3):
@@ -217,8 +221,12 @@ class Button(pygame.sprite.Sprite):
             self.unhover()
         if event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(pygame.mouse.get_pos()) and event.button == 1:
             self.click(10)
-        if event.type == MOUSEBUTTONUP and self.rect.collidepoint(pygame.mouse.get_pos()):
+            #print(f"{self.text} DOWN")
+            click_event = pygame.event.Event(CLICK, text=self.text)
+            pygame.event.post(click_event)
+        if event.type == MOUSEBUTTONUP:
             self.unclick()
+            #print(f"{self.text} UP")
     
     def click(self, offset):
         self.image = pygame.transform.scale(self.image, (self.size[0] + offset, self.size[1] + offset))
@@ -351,11 +359,11 @@ def main():
         menu_screen = Screen([button_group, test_sprites_group])
         menu_screen.add()
 
-        # Init Menu Screen 2
+        # Init Settings Screen
         back_button = Button("Back", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 160))
-        menu_2_button_group = pygame.sprite.Group()
-        menu_2_button_group.add(back_button)
-        menu_screen_2 = Screen([menu_2_button_group])
+        settings_button_group = pygame.sprite.Group()
+        settings_button_group.add(back_button)
+        settings_screen = Screen([settings_button_group])
 
         #Testing
         game_screen = False
@@ -364,6 +372,7 @@ def main():
         fps = 120
         while True:
             for event in pygame.event.get():
+                print(event)
                 if event.type == pygame.QUIT:
                     return
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and game_screen:
@@ -377,7 +386,17 @@ def main():
                             circle_group.add(Circle(140, 15, hit_list[0].pos))
                             player_x = True
                             player_o = False
+                if event.type == CLICK and event.text == "Settings":
+                    menu_screen.remove()
+                    settings_screen.add()
+                if event.type == CLICK and event.text == "Exit":
+                    return
+                if event.type == CLICK and event.text == "Back":
+                    settings_screen.remove()
+                    menu_screen.add()
+
                 menu_screen.update(event)
+                settings_screen.update(event)
                 
             
                 #menu_screen_2.show(event, window)
@@ -389,6 +408,7 @@ def main():
 
             window.blit(background, (0, 0))
             menu_screen.draw(window)
+            settings_screen.draw(window)
 
             # TESTING SHOW SCREENS
             
