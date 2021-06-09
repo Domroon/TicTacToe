@@ -406,7 +406,7 @@ def main():
 
         while True:
             for event in pygame.event.get():
-                print(event)
+                #print(event)
                 pygame.event.set_blocked(MOUSEMOTION)
                 if event.type == pygame.QUIT:
                     return
@@ -421,6 +421,24 @@ def main():
                 if event.type == BUTTON_CLICK and event.text == "Start":
                     menu_screen.remove()
                     game_screen.add()
+                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[0]:
+                    print("Field 1 clicked")
+                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[1]:
+                    print("Field 2 clicked")
+                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[2]:
+                    print("Field 3 clicked")
+                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[3]:
+                    print("Field 4 clicked")
+                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[4]:
+                    print("Field 5 clicked")
+                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[5]:
+                    print("Field 6 clicked")
+                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[6]:
+                    print("Field 7 clicked")
+                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[7]:
+                    print("Field 8 clicked")
+                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[8]:
+                    print("Field 9 clicked")
 
                 menu_screen.update(event)
                 settings_screen.update(event)
