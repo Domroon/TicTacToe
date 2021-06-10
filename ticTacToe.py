@@ -349,11 +349,6 @@ def main():
                     j += 1
                     if j <= 8:
                         player_showfield.update(sign_list[j])
-                    if j >= 9:
-                        time.sleep(1)
-                        game_screen.remove()
-                        menu_screen.add()
-                        j = 0
 
                 menu_screen.update(event)
                 settings_screen.update(event)
