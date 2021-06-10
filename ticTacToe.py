@@ -5,7 +5,7 @@ from pygame import sprite
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION
 import pygame.freetype
 from itertools import cycle
-
+import time
 
 BUTTON_CLICK = pygame.event.custom_type()
 MATCHFIELD_CLICK = pygame.event.custom_type()
@@ -144,7 +144,8 @@ class Label(pygame.sprite.Sprite):
         self.color = color
 
         self.font = pygame.freetype.Font(None, self.size)
-        self.image = self.font.render(self.text, self.color)
+        self.image, self.rect = self.font.render(self.text, self.color)
+        self.rect = self.image.get_rect(center=self.pos)
 
 
 class Matchfield(pygame.sprite.Sprite):
@@ -213,7 +214,7 @@ class Matchfield(pygame.sprite.Sprite):
             if id(hitbox) == hitbox_id:
                 self.hitbox_group.remove(hitbox)
 
-    def generate_sign(self, event, i, sign_list, cross_group, circle_group):
+    def add_sign(self, event, i, sign_list, cross_group, circle_group):
         if sign_list[i] == "Cross":
             cross_group.add(Cross(140, event.rect.center))
         elif sign_list[i] == "Circle":
@@ -257,7 +258,7 @@ class Screen:
         for sprite_group in self.sprite_groups:
             sprite_group.empty()
 
-    
+
 def main():
     pygame.init()
     try:
@@ -294,8 +295,10 @@ def main():
         button_group = pygame.sprite.Group()
         button_group.add(menu_buttons)
 
-        cross = Cross(140, (window.get_rect().centerx, window.get_rect().centery - 140))
-        sign_sprites = [cross]
+        cross = Cross(140, (window.get_rect().centerx - 70, window.get_rect().centery - 140))
+        circle = Circle(140, (window.get_rect().centerx + 70, window.get_rect().centery - 140))
+        label = Label("Tic Tac Toe", 70, (window.get_rect().centerx, window.get_rect().centery- 300))
+        sign_sprites = [cross, circle, label]
         sign_sprites_group = pygame.sprite.Group()
         sign_sprites_group.add(sign_sprites)
 
@@ -340,12 +343,17 @@ def main():
                     game_screen.add()
                 for i in range(0, 9): 
                     if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[i]:
-                        matchfield.generate_sign(event, j, sign_list, cross_group, circle_group)
+                        matchfield.add_sign(event, j, sign_list, cross_group, circle_group)
                         matchfield.remove_hit_box(event.id)
                 if event.type == MATCHFIELD_CLICK:
                     j += 1
                     if j <= 8:
                         player_showfield.update(sign_list[j])
+                    if j >= 9:
+                        time.sleep(1)
+                        game_screen.remove()
+                        menu_screen.add()
+                        j = 0
 
                 menu_screen.update(event)
                 settings_screen.update(event)
