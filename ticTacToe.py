@@ -1,5 +1,5 @@
 import pygame
-from pygame import math
+from pygame import Surface, math
 from pygame import mouse
 from pygame import sprite
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION
@@ -133,6 +133,18 @@ class Button(pygame.sprite.Sprite):
 
     def unclick(self):
         pass
+
+
+class Label(pygame.sprite.Sprite):
+    def __init__(self, text, size, pos, color=(255, 255, 255)):
+        super().__init__()
+        self.text = text
+        self.size = size
+        self.pos = pos
+        self.color = color
+
+        self.font = pygame.freetype.Font(None, self.size)
+        self.image = self.font.render(self.text, self.color)
 
 
 class Matchfield(pygame.sprite.Sprite):
