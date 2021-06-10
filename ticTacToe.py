@@ -11,69 +11,6 @@ BUTTON_CLICK = pygame.event.custom_type()
 MATCHFIELD_CLICK = pygame.event.custom_type()
 
 
-def show_game_screen(background, matchfield, matchfield_rect, player_showfield_group, cross_group, circle_group, window, mousebox):
-    background.blit(matchfield, matchfield.get_rect(center=matchfield_rect.center))
-            
-    player_showfield_group.update(1)
-    player_showfield_group.draw(window)
-
-    cross_group.draw(window)
-    circle_group.draw(window)
-
-
-def show_menuscreen(button_group, surface):
-    surface.fill((0, 0, 0))
-    button_group.update()
-    button_group.draw(surface)
-
-
-def check_menu_screen_actions(event, menu_screen, menu_screen_2):
-    if event.type == MOUSEBUTTONDOWN:
-        for sprite_list in menu_screen.sprite_lists:
-            for sprite in sprite_list:
-                if type(sprite).__name__ == "Button":
-                    if sprite.text == "Start" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                        sprite.click(10)
-                    elif sprite.text == "Settings" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                        sprite.click(10)
-                    elif sprite.text == "Exit" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                        sprite.click(10)
-
-    if event.type == MOUSEBUTTONUP:
-        for sprite_list in menu_screen.sprite_lists:
-            for sprite in sprite_list:
-                if type(sprite).__name__ == "Button":
-                    if sprite.text == "Start" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                        print("Start clicked")
-                        sprite.unclick()
-                    elif sprite.text == "Settings" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                        menu_screen.remove()
-                        menu_screen_2.add()
-                        sprite.unclick()
-                    elif sprite.text == "Exit" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                        pygame.quit()
-                        exit()
-
-
-def check_menu_screen_2_actions(event, menu_screen, menu_screen_2):
-    if event.type == MOUSEBUTTONDOWN:
-        for sprite_list in menu_screen_2.sprite_lists:
-            for sprite in sprite_list:
-                if type(sprite).__name__ == "Button":
-                    if sprite.text == "Back" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                        sprite.click(10)
-
-    if event.type == MOUSEBUTTONUP:
-        for sprite_list in menu_screen_2.sprite_lists:
-            for sprite in sprite_list:
-                if type(sprite).__name__ == "Button":
-                    if sprite.text == "Back" and sprite.rect.collidepoint(pygame.mouse.get_pos()):
-                        print("Back clicked")
-                        sprite.unclick()
-                        menu_screen_2.remove()
-                        menu_screen.add()
-
-
 class PlayerShowField(pygame.sprite.Sprite):
     def __init__(self, size, color, surface):
         super().__init__()
@@ -121,7 +58,7 @@ class Cross(pygame.sprite.Sprite):
 
 
 class Circle(pygame.sprite.Sprite):
-    def __init__(self, diameter, pos, color=(255, 255, 255), thickness=5):
+    def __init__(self, diameter, pos, color=(255, 255, 255), thickness=15):
         super().__init__()
         self.color = color
         self.image = pygame.Surface((diameter, diameter), pygame.SRCALPHA)
@@ -135,25 +72,12 @@ class Hitbox(pygame.sprite.Sprite):
         super().__init__()
         self.pos = pos
         self.image = pygame.Surface((width, width))
-        self.image.fill((255, 255, 255))
         self.rect = self.image.get_rect(center=pos)
 
     def update(self, event):
         if event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(pygame.mouse.get_pos()):
-            #print(id(self))
             matchfield_click_event = pygame.event.Event(MATCHFIELD_CLICK, id=id(self), rect=self.rect)
             pygame.event.post(matchfield_click_event)
-
-
-class Mousebox(pygame.sprite.Sprite):
-    def __init__(self, width):
-        super().__init__()
-        self.image = pygame.Surface((width, width))
-        self.image.fill((0, 255, 0))
-        self.rect = self.image.get_rect(center=pygame.mouse.get_pos())
-
-    def update(self):
-        self.rect = self.image.get_rect(center=pygame.mouse.get_pos())
 
 
 class Button(pygame.sprite.Sprite):
@@ -216,7 +140,6 @@ class Matchfield(pygame.sprite.Sprite):
         super().__init__()
         self.width = width
         self.image = pygame.Surface((width, width))
-        self.image.fill((50, 50, 50))
         self.rect = self.image.get_rect(center = surface.get_rect().center)
         self.sign_width = sign_width
         self.postitions = self.calculate_matchfield_positions()
@@ -273,10 +196,14 @@ class Matchfield(pygame.sprite.Sprite):
 
         return hitbox_ids
 
+    def remove_hit_box(self, hitbox_id):
+        for hitbox in self.hitbox_group:
+            if id(hitbox) == hitbox_id:
+                self.hitbox_group.remove(hitbox)
+
 
 class Screen:
     def __init__(self, sprite_groups):
-        # sprite_lists attribute not necessary?!
         # save all sprites from the sprite_groups in seperate sprite_lists
         # to have a save location, so that you can remove all sprites 
         # from the groups but can them put later back to the sprite groups
@@ -291,9 +218,6 @@ class Screen:
             sprite_list = []
 
         self.remove()
-        #self.sprite_lists = sprite_lists
-        #self.active = False
-        #implement a menu class for that?
         self.buttons = {}
 
     def add(self):
@@ -302,15 +226,8 @@ class Screen:
         for sprite_group in self.sprite_groups:
             sprite_group.add(self.sprite_lists[i])
             i += 1
-        #self.active = True
-
-        # implement a menu class for that?
-        #for button in self.sprite_groups[0]:
-            #self.buttons[button.text] = button
 
     def draw(self, surface):
-        # draw all sprite_groups to the given surface
-        # and update all groups
         for sprite_group in self.sprite_groups:
             sprite_group.draw(surface)
 
@@ -319,12 +236,15 @@ class Screen:
             sprite_group.update(event)
 
     def remove(self):
-        # empty() all sprite groups
-        # draw/blit a black screen over the given surface
         for sprite_group in self.sprite_groups:
             sprite_group.empty()
-            #sprite_group.clear(surface, background)
-        #self.active = False
+
+
+def generate_sign(event, i, sign_list, cross_group, circle_group):
+    if sign_list[i] == "Cross":
+        cross_group.add(Cross(140, event.rect.center))
+    elif sign_list[i] == "Circle":
+        circle_group.add(Circle(140, event.rect.center))
 
     
 def main():
@@ -348,11 +268,6 @@ def main():
         player_showfield = PlayerShowField(50, (255, 255, 255), window)
         player_showfield_group = pygame.sprite.Group()
         player_showfield_group.add(player_showfield)
-
-        mousebox_width = 10
-        mousebox = Mousebox(mousebox_width)
-        mousebox_group = pygame.sprite.Group()
-        mousebox_group.add(mousebox)
 
         matchfield_group = pygame.sprite.Group()
         matchfield_group.add(matchfield)
@@ -411,60 +326,10 @@ def main():
                 if event.type == BUTTON_CLICK and event.text == "Start":
                     menu_screen.remove()
                     game_screen.add()
-                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[0]:
-                    print("Field 1 clicked")
-                    if sign_list[i] == "Cross":
-                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
-                    elif sign_list[i] == "Circle":
-                        circle_group.add(Circle())
-                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[1]:
-                    print("Field 2 clicked")
-                    if sign_list[i] == "Cross":
-                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
-                    elif sign_list[i] == "Circle":
-                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
-                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[2]:
-                    print("Field 3 clicked")
-                    if sign_list[i] == "Cross":
-                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
-                    elif sign_list[i] == "Circle":
-                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
-                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[3]:
-                    print("Field 4 clicked")
-                    if sign_list[i] == "Cross":
-                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
-                    elif sign_list[i] == "Circle":
-                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
-                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[4]:
-                    print("Field 5 clicked")
-                    if sign_list[i] == "Cross":
-                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
-                    elif sign_list[i] == "Circle":
-                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
-                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[5]:
-                    print("Field 6 clicked")
-                    if sign_list[i] == "Cross":
-                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
-                    elif sign_list[i] == "Circle":
-                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
-                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[6]:
-                    print("Field 7 clicked")
-                    if sign_list[i] == "Cross":
-                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
-                    elif sign_list[i] == "Circle":
-                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
-                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[7]:
-                    print("Field 8 clicked")
-                    if sign_list[i] == "Cross":
-                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
-                    elif sign_list[i] == "Circle":
-                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
-                if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[8]:
-                    print("Field 9 clicked")
-                    if sign_list[i] == "Cross":
-                        cross_group.add(Cross(140, event.rect.center, color=(255, 0, 0)))
-                    elif sign_list[i] == "Circle":
-                        circle_group.add(Circle(140, event.rect.center, color=(255, 0, 0)))
+                for i in range(0, 9): 
+                    if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[i]:
+                        generate_sign(event, i, sign_list, cross_group, circle_group)
+                        matchfield.remove_hit_box(event.id)
                 if event.type == MATCHFIELD_CLICK:
                     i += 1
 
@@ -477,8 +342,6 @@ def main():
             menu_screen.draw(window)
             settings_screen.draw(window)
             game_screen.draw(window)
-
-            mousebox.update()
 
             pygame.display.update()
             clock.tick(fps)
