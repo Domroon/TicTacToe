@@ -311,6 +311,18 @@ def main():
         settings_button_group.add(back_button)
         settings_screen = Screen([settings_button_group])
 
+        # Init Gamemodes Screen
+        one_vs_one_button = Button("1 VS 1", (200, 60), window.get_rect().center)
+        gamemodes_button_group = pygame.sprite.Group()
+        gamemodes_button_group.add(one_vs_one_button, back_button)
+        gamemodes_screen = Screen([gamemodes_button_group])
+
+        # Init One VS One Init Screen
+        play_button = Button("Play", (200, 60), window.get_rect().center)
+        one_vs_one_button_group = pygame.sprite.Group()
+        one_vs_one_button_group.add(play_button)
+        one_vs_one_init_screen = Screen([one_vs_one_button_group])
+
         clock = pygame.time.Clock()
         fps = 120
 
@@ -336,11 +348,15 @@ def main():
                 if event.type == BUTTON_CLICK and event.text == "Exit":
                     return
                 if event.type == BUTTON_CLICK and event.text == "Back":
+                    gamemodes_screen.remove()
                     settings_screen.remove()
                     menu_screen.add()
                 if event.type == BUTTON_CLICK and event.text == "Start":
                     menu_screen.remove()
-                    game_screen.add()
+                    gamemodes_screen.add()
+                if event.type == BUTTON_CLICK and event.text == "1 VS 1":
+                    gamemodes_screen.remove()
+                    one_vs_one_init_screen.add()
                 for i in range(0, 9): 
                     if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[i]:
                         matchfield.add_sign(event, j, sign_list, cross_group, circle_group)
@@ -353,12 +369,16 @@ def main():
                 menu_screen.update(event)
                 settings_screen.update(event)
                 game_screen.update(event)
+                gamemodes_screen.update(event)
+                one_vs_one_init_screen.update(event)
             
             window.blit(background, (0, 0))
 
             menu_screen.draw(window)
             settings_screen.draw(window)
             game_screen.draw(window)
+            gamemodes_screen.draw(window)
+            one_vs_one_init_screen.draw(window)
 
             pygame.display.update()
             clock.tick(fps)
