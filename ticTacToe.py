@@ -148,6 +148,19 @@ class Label(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
 
+class TextField(pygame.sprite.Sprite):
+    def __init__(self, pos, dimensions=(200, 30), bg_color=(255, 255, 255)):
+        super().__init__()
+        self.dimensions = dimensions
+        self.pos = pos
+        self.text = []
+        self.bg_color = bg_color
+
+        self.font = pygame.freetype.Font(None)
+
+    def add_letter(self, letter):
+        self.text.append(letter)
+
 class Matchfield(pygame.sprite.Sprite):
     def __init__(self, width, surface, sign_width=140):
         super().__init__()
@@ -357,6 +370,9 @@ def main():
                 if event.type == BUTTON_CLICK and event.text == "1 VS 1":
                     gamemodes_screen.remove()
                     one_vs_one_init_screen.add()
+                if event.type == BUTTON_CLICK and event.text == "Play":
+                    one_vs_one_init_screen.remove()
+                    game_screen.add()
                 for i in range(0, 9): 
                     if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[i]:
                         matchfield.add_sign(event, j, sign_list, cross_group, circle_group)
