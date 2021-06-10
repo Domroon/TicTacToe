@@ -17,22 +17,22 @@ class PlayerShowField(pygame.sprite.Sprite):
         self.color = color
         self.surface = surface
         self.font = pygame.freetype.Font(None, size)
-        self.image, self.rect = self.font.render("Test", (255, 255, 255))
+        self.image, self.rect = self.font.render("Showfield Init", (255, 255, 255))
         self.rect = self.image.get_rect(midbottom=surface.get_rect().midbottom)
 
-    def show_player_1(self):
-        self.image, self.rect = self.font.render("Player 1", self.color)
+    def show_x(self):
+        self.image, self.rect = self.font.render("X", self.color)
         self.rect = self.image.get_rect(midbottom=self.surface.get_rect().midbottom)
 
-    def show_player_2(self):
-        self.image, self.rect = self.font.render("Player 2", self.color)
+    def show_o(self):
+        self.image, self.rect = self.font.render("O", self.color)
         self.rect = self.image.get_rect(midbottom=self.surface.get_rect().midbottom)
 
-    def update(self, player):
-        if player == 1:
-            self.show_player_1()
-        elif player == 2:
-            self.show_player_2()
+    def update(self, sign):
+        if sign == "Cross":
+            self.show_x()
+        elif sign == "Circle":
+            self.show_o()
 
 
 class Cross(pygame.sprite.Sprite):
@@ -201,6 +201,12 @@ class Matchfield(pygame.sprite.Sprite):
             if id(hitbox) == hitbox_id:
                 self.hitbox_group.remove(hitbox)
 
+    def generate_sign(self, event, i, sign_list, cross_group, circle_group):
+        if sign_list[i] == "Cross":
+            cross_group.add(Cross(140, event.rect.center))
+        elif sign_list[i] == "Circle":
+            circle_group.add(Circle(140, event.rect.center))
+
 
 class Screen:
     def __init__(self, sprite_groups):
@@ -239,13 +245,6 @@ class Screen:
         for sprite_group in self.sprite_groups:
             sprite_group.empty()
 
-
-def generate_sign(event, i, sign_list, cross_group, circle_group):
-    if sign_list[i] == "Cross":
-        cross_group.add(Cross(140, event.rect.center))
-    elif sign_list[i] == "Circle":
-        circle_group.add(Circle(140, event.rect.center))
-
     
 def main():
     pygame.init()
@@ -272,7 +271,7 @@ def main():
         matchfield_group = pygame.sprite.Group()
         matchfield_group.add(matchfield)
 
-        game_screen = Screen([matchfield_group, matchfield.hitbox_group, cross_group, circle_group])
+        game_screen = Screen([matchfield_group, matchfield.hitbox_group, cross_group, circle_group, player_showfield_group])
 
         # Init Menu Screen
         start_button = Button("Start", (200, 60), window.get_rect().center)
@@ -309,8 +308,9 @@ def main():
             sign_list.append(sign) 
             i += 1
 
-        i = 0
+        j = 0
 
+        player_showfield.update(sign_list[j])
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -328,10 +328,12 @@ def main():
                     game_screen.add()
                 for i in range(0, 9): 
                     if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[i]:
-                        generate_sign(event, i, sign_list, cross_group, circle_group)
+                        matchfield.generate_sign(event, j, sign_list, cross_group, circle_group)
                         matchfield.remove_hit_box(event.id)
                 if event.type == MATCHFIELD_CLICK:
-                    i += 1
+                    j += 1
+                    if j <= 8:
+                        player_showfield.update(sign_list[j])
 
                 menu_screen.update(event)
                 settings_screen.update(event)
