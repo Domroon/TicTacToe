@@ -8,6 +8,7 @@ from itertools import cycle
 import time
 
 BUTTON_CLICK = pygame.event.custom_type()
+LABEL_CLICK = pygame.event.custom_type()
 MATCHFIELD_CLICK = pygame.event.custom_type()
 
 
@@ -149,41 +150,36 @@ class Label(pygame.sprite.Sprite):
 
 
 class TextField(pygame.sprite.Sprite):
-    def __init__(self, pos, dimensions=(200, 30), bg_color=(255, 255, 255)):
+    def __init__(self, pos, dimensions=(200, 30), bg_color=(255, 255, 255), size=30):
         super().__init__()
         self.dimensions = dimensions
         self.pos = pos
-        self.text = []
+        self.text = ""
         self.bg_color = bg_color
 
-        self.font = pygame.freetype.Font(None)
+        self.font = pygame.freetype.Font(None, size)
 
         self.image = pygame.Surface(self.dimensions)
-        self.image.fill(bg_color)
+        self.image.fill(self.bg_color)
         self.rect = self.image.get_rect(center=pos)
+        self.font.render_to(self.image, (0,0), str(self.text))
 
-        self.text_curser = Surface((2, 30))
-        self.text_curser_rect = self.text_curser.get_rect(center=(0, 0))
-        self.text_curser.fill((255, 0, 0))
-
-        self.counter = 0
+        self.focus = False
 
     def add_letter(self, letter):
-        self.text.append(letter)
-
-    def add_text_curser(self):
-        if self.counter >= 10 and self.counter <= 480:
-            self.text_curser.fill((255, 0, 0))
-            self.image.blit(self.text_curser, self.text_curser_rect.center)
-            self.counter = 0
-        else:
-            self.text_curser.fill((255, 255, 255))
-            self.image.blit(self.text_curser, self.text_curser_rect.center)
-            self.counter += 1
-
+        self.text += letter
 
     def update(self, event):
-        self.add_text_curser()
+        self.image.fill(self.bg_color)
+        if event.type == MOUSEBUTTONDOWN:
+            self.focus = False
+        if event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(pygame.mouse.get_pos()):
+            self.focus = True
+        if event.type == 771 and self.focus and self.focus:
+            self.text += event.text
+        if event.type == 768 and event.key == 8 and self.focus:
+            self.text = self.text[:-1]
+        self.font.render_to(self.image, (0,5), str(self.text))
 
 
 class Matchfield(pygame.sprite.Sprite):
@@ -356,17 +352,20 @@ def main():
         gamemodes_screen = Screen([gamemodes_button_group])
 
         # Init One VS One Init Screen
-        play_button = Button("Play", (200, 60), window.get_rect().center)
+        play_button = Button("Play", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 80))
+        vs_1_label = Label("1 vs 1", 70, (window.get_rect().centerx, window.get_rect().centery - 300))
+        label_player_1 = Label("Player 1 Name: ", 20, (window.get_rect().centerx - 200, window.get_rect().centery - 100))
+        label_player_2 = Label("Player 2 Name: ", 20, (window.get_rect().centerx - 200, window.get_rect().centery))
+        player_1_name = TextField((window.get_rect().centerx, window.get_rect().centery - 100))
+        player_2_name = TextField((window.get_rect().centerx, window.get_rect().centery))
         one_vs_one_button_group = pygame.sprite.Group()
-        one_vs_one_button_group.add(play_button)
+        one_vs_one_button_group.add(play_button, vs_1_label, player_1_name, player_2_name, label_player_1, label_player_2)
         one_vs_one_init_screen = Screen([one_vs_one_button_group])
 
         # Input Screen
-        vs_1_label = Label("1 vs 1", 70, (window.get_rect().centerx, window.get_rect().centery - 300))
-        player_1_name = TextField(window.get_rect().center)
-        input_screen_group = pygame.sprite.Group()
-        input_screen_group.add(vs_1_label, player_1_name)
-        input_screen = Screen([input_screen_group])
+        #input_screen_group = pygame.sprite.Group()
+        #input_screen_group.add()
+        #input_screen = Screen([input_screen_group])
 
         clock = pygame.time.Clock()
         fps = 120
@@ -385,6 +384,7 @@ def main():
         player_showfield.update(sign_list[j])
         while True:
             for event in pygame.event.get():
+                print(event)
                 if event.type == pygame.QUIT:
                     return
                 if event.type == BUTTON_CLICK and event.text == "Settings":
@@ -404,7 +404,9 @@ def main():
                     one_vs_one_init_screen.add()
                 if event.type == BUTTON_CLICK and event.text == "Play":
                     one_vs_one_init_screen.remove()
-                    input_screen.add()
+                    game_screen.add()
+                    print(player_1_name.text)
+                    print(player_2_name.text)
                 for i in range(0, 9): 
                     if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[i]:
                         matchfield.add_sign(event, j, sign_list, cross_group, circle_group)
@@ -419,7 +421,6 @@ def main():
                 game_screen.update(event)
                 gamemodes_screen.update(event)
                 one_vs_one_init_screen.update(event)
-                input_screen.update(event)
             
             window.blit(background, (0, 0))
 
@@ -428,7 +429,6 @@ def main():
             game_screen.draw(window)
             gamemodes_screen.draw(window)
             one_vs_one_init_screen.draw(window)
-            input_screen.draw(window)
 
             pygame.display.update()
             clock.tick(fps)
