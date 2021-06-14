@@ -186,6 +186,8 @@ class Matchfield(pygame.sprite.Sprite):
     def __init__(self, width, surface, sign_width=140):
         super().__init__()
         self.width = width
+        self.name_1 = "reserved"
+        self.name_2 = "reserved"
         self.image = pygame.Surface((width, width))
         self.rect = self.image.get_rect(center = surface.get_rect().center)
         self.sign_width = sign_width
@@ -361,11 +363,6 @@ def main():
         one_vs_one_button_group = pygame.sprite.Group()
         one_vs_one_button_group.add(play_button, vs_1_label, player_1_name, player_2_name, label_player_1, label_player_2)
         one_vs_one_init_screen = Screen([one_vs_one_button_group])
-
-        # Input Screen
-        #input_screen_group = pygame.sprite.Group()
-        #input_screen_group.add()
-        #input_screen = Screen([input_screen_group])
 
         clock = pygame.time.Clock()
         fps = 120
