@@ -1,3 +1,4 @@
+from typing import NamedTuple
 import pygame
 from pygame import Surface, math
 from pygame import mouse
@@ -6,6 +7,8 @@ from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION
 import pygame.freetype
 from itertools import cycle
 import time
+from collections import namedtuple
+import json
 
 BUTTON_CLICK = pygame.event.custom_type()
 LABEL_CLICK = pygame.event.custom_type()
@@ -88,13 +91,13 @@ class Button(pygame.sprite.Sprite):
         self.size = size
         self.pos = pos
         self.color = color
-        self.image = pygame.Surface(self.size)
+        self.image = Surface(self.size)
         self.image.fill((self.color))
         self.width = width
 
         self.rect = self.image.get_rect(center=pos)
 
-        self.middle_rectangle = pygame.Surface((self.size[0] - self.width, self.size[1] - self.width))
+        self.middle_rectangle = Surface((self.size[0] - self.width, self.size[1] - self.width))
         
         self.font = pygame.freetype.Font(None, 40)
         self.text_surface, self.text_surface_rect = self.font.render(self.text, fgcolor=(50, 50, 50))
@@ -295,6 +298,25 @@ class Screen:
             sprite_group.empty()
 
 
+def dict2obj(dict, classname):
+    pass
+    # using json.loads method and passing json.dumps
+    # method and custom object hook as arguments
+    return json.loads(json.dumps(dict), object_hook=classname)
+
+
+def buttonObj_to_json(obj):
+    obj = obj.__dict__
+    obj['image'] = (obj['image'].get_width(), obj['image'].get_height())
+    obj['rect'] = (obj['rect'].left, obj['rect'].top, obj['rect'].width, obj['rect'].height)
+    obj['middle_rectangle'] = (obj['middle_rectangle'].get_width(), obj['middle_rectangle'].get_height())
+    obj['font'] = obj['font'].path
+    obj['text_surface'] = (obj['text_surface'].get_width(), obj['text_surface'].get_height())
+    obj['text_surface_rect'] = (obj['text_surface_rect'].left, obj['text_surface_rect'].top, obj['text_surface_rect'].width, obj['text_surface_rect'].height)
+    obj = json.dumps(obj)
+    return obj
+
+
 def main():
     pygame.init()
     try:
@@ -340,6 +362,11 @@ def main():
 
         menu_screen = Screen([button_group, sign_sprites_group])
         menu_screen.add()
+        
+        #TESTING Serializing Button
+        test_button = Button("Test", (200, 60), window.get_rect().center)
+        jsonTestButton = buttonObj_to_json(test_button)
+        print(jsonTestButton)
 
         # Init Settings Screen
         back_button = Button("Back", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 160))
@@ -381,7 +408,7 @@ def main():
         player_showfield.update(sign_list[j])
         while True:
             for event in pygame.event.get():
-                print(event)
+                #print(event)
                 if event.type == pygame.QUIT:
                     return
                 if event.type == BUTTON_CLICK and event.text == "Settings":
