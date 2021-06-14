@@ -161,6 +161,7 @@ class TextField(pygame.sprite.Sprite):
     def add_letter(self, letter):
         self.text.append(letter)
 
+
 class Matchfield(pygame.sprite.Sprite):
     def __init__(self, width, surface, sign_width=140):
         super().__init__()
@@ -336,6 +337,12 @@ def main():
         one_vs_one_button_group.add(play_button)
         one_vs_one_init_screen = Screen([one_vs_one_button_group])
 
+        # Input Screen
+        vs_1_label = Label("1 vs 1", 70, (window.get_rect().centerx, window.get_rect().centery - 300))
+        input_screen_group = pygame.sprite.Group()
+        input_screen_group.add(vs_1_label)
+        input_screen = Screen([input_screen_group])
+
         clock = pygame.time.Clock()
         fps = 120
 
@@ -372,7 +379,7 @@ def main():
                     one_vs_one_init_screen.add()
                 if event.type == BUTTON_CLICK and event.text == "Play":
                     one_vs_one_init_screen.remove()
-                    game_screen.add()
+                    input_screen.add()
                 for i in range(0, 9): 
                     if event.type == MATCHFIELD_CLICK and event.id == matchfield.hitbox_ids[i]:
                         matchfield.add_sign(event, j, sign_list, cross_group, circle_group)
@@ -387,6 +394,7 @@ def main():
                 game_screen.update(event)
                 gamemodes_screen.update(event)
                 one_vs_one_init_screen.update(event)
+                input_screen.update(event)
             
             window.blit(background, (0, 0))
 
@@ -395,6 +403,7 @@ def main():
             game_screen.draw(window)
             gamemodes_screen.draw(window)
             one_vs_one_init_screen.draw(window)
+            input_screen.draw(window)
 
             pygame.display.update()
             clock.tick(fps)
