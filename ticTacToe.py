@@ -158,8 +158,32 @@ class TextField(pygame.sprite.Sprite):
 
         self.font = pygame.freetype.Font(None)
 
+        self.image = pygame.Surface(self.dimensions)
+        self.image.fill(bg_color)
+        self.rect = self.image.get_rect(center=pos)
+
+        self.text_curser = Surface((2, 30))
+        self.text_curser_rect = self.text_curser.get_rect(center=(0, 0))
+        self.text_curser.fill((255, 0, 0))
+
+        self.counter = 0
+
     def add_letter(self, letter):
         self.text.append(letter)
+
+    def add_text_curser(self):
+        if self.counter >= 10 and self.counter <= 480:
+            self.text_curser.fill((255, 0, 0))
+            self.image.blit(self.text_curser, self.text_curser_rect.center)
+            self.counter = 0
+        else:
+            self.text_curser.fill((255, 255, 255))
+            self.image.blit(self.text_curser, self.text_curser_rect.center)
+            self.counter += 1
+
+
+    def update(self, event):
+        self.add_text_curser()
 
 
 class Matchfield(pygame.sprite.Sprite):
@@ -339,8 +363,9 @@ def main():
 
         # Input Screen
         vs_1_label = Label("1 vs 1", 70, (window.get_rect().centerx, window.get_rect().centery - 300))
+        player_1_name = TextField(window.get_rect().center)
         input_screen_group = pygame.sprite.Group()
-        input_screen_group.add(vs_1_label)
+        input_screen_group.add(vs_1_label, player_1_name)
         input_screen = Screen([input_screen_group])
 
         clock = pygame.time.Clock()
