@@ -305,6 +305,7 @@ def dict2obj(dict, classname):
     return json.loads(json.dumps(dict), object_hook=classname)
 
 
+# Use an Serilization Class to do this? Method for rects and for Surfaces would make this here make a lot easier
 def buttonObj_to_json(obj):
     obj = obj.__dict__
     obj['image'] = (obj['image'].get_width(), obj['image'].get_height())
@@ -315,6 +316,10 @@ def buttonObj_to_json(obj):
     obj['text_surface_rect'] = (obj['text_surface_rect'].left, obj['text_surface_rect'].top, obj['text_surface_rect'].width, obj['text_surface_rect'].height)
     obj = json.dumps(obj)
     return obj
+
+
+def jsonButton_to_jsonObj(json_dict):
+    pass
 
 
 def main():
