@@ -298,30 +298,33 @@ class Screen:
             sprite_group.empty()
 
 
-def dict2obj(dict, classname):
-    pass
-    # using json.loads method and passing json.dumps
-    # method and custom object hook as arguments
-    return json.loads(json.dumps(dict), object_hook=classname)
+class Control():
+    def __init__(self):
+        # load json file into an variable?
+        pass
 
+    def buttonObj_to_jsonButton(self, buttonObj):
+        jsonButton = buttonObj.__dict__
+        del jsonButton['image'] 
+        del jsonButton['rect'] 
+        del jsonButton['middle_rectangle'] 
+        del jsonButton['font'] 
+        del jsonButton['text_surface'] 
+        del jsonButton['text_surface_rect'] 
+        jsonButton = json.dumps(jsonButton)
+        return jsonButton
 
-# Use an Serilization Class to do this? Method for rects and for Surfaces would make this here make a lot easier
-def buttonObj_to_json(obj):
-    obj = obj.__dict__
-    obj['image'] = (obj['image'].get_width(), obj['image'].get_height())
-    obj['rect'] = (obj['rect'].left, obj['rect'].top, obj['rect'].width, obj['rect'].height)
-    obj['middle_rectangle'] = (obj['middle_rectangle'].get_width(), obj['middle_rectangle'].get_height())
-    obj['font'] = obj['font'].path
-    obj['text_surface'] = (obj['text_surface'].get_width(), obj['text_surface'].get_height())
-    obj['text_surface_rect'] = (obj['text_surface_rect'].left, obj['text_surface_rect'].top, obj['text_surface_rect'].width, obj['text_surface_rect'].height)
-    obj = json.dumps(obj)
-    return obj
+    def convert_image_to_json(self, dict, key):
+        return [dict[key].get_width(), dict[key].get_height()]
 
+    def convert_rect_to_json(self, dict, key):
+        return [dict[key].left, dict[key].top, dict[key].width, dict[key].height]
 
-def jsonButton_to_jsonObj(json_dict):
-    pass
-
-
+    def jsonButton_to_ButtonObj(self, jsonButton):
+        ButtonDict = json.loads(jsonButton)
+        return Button(ButtonDict['text'], ButtonDict['size'], ButtonDict['pos'], color=tuple(ButtonDict['color']), width=ButtonDict['width'])
+        
+    
 def main():
     pygame.init()
     try:
@@ -369,9 +372,12 @@ def main():
         menu_screen.add()
         
         #TESTING Serializing Button
+        control = Control()
         test_button = Button("Test", (200, 60), window.get_rect().center)
-        jsonTestButton = buttonObj_to_json(test_button)
-        print(jsonTestButton)
+        jsonTestButton = control.buttonObj_to_jsonButton(test_button)
+        print(type(jsonTestButton))
+        buttonFromJson = control.jsonButton_to_ButtonObj(jsonTestButton)
+        print(buttonFromJson)
 
         # Init Settings Screen
         back_button = Button("Back", (200, 60), (window.get_rect().centerx, window.get_rect().centery + 160))
